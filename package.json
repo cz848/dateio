@@ -1,0 +1,21 @@
+{
+  "name": "dateio",
+  "version": "1.0.0",
+  "description": "A lightweight JavaScript date library for display and formatting dates.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "date",
+    "formatter",
+    "lightweight",
+    "date",
+    "library"
+  ],
+  "author": "Tyler Chao",
+  "license": "MIT"
+}
