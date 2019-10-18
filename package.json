@@ -17,5 +17,6 @@
     "library"
   ],
   "author": "Tyler Chao",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": "cz848/dateio"
 }
