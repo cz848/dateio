@@ -150,6 +150,10 @@ class DateIO {
     return input.length ? this.$set('milliseconds', ...input) : this.$date.getMilliseconds();
   }
 
+  MS() {
+    return zeroFill(this.ms(), 3);
+  }
+
   // 上下午
   // am/pm
   a() {
