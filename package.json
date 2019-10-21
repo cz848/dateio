@@ -1,6 +1,6 @@
 {
   "name": "dateio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight JavaScript date library for display and formatting dates.",
   "main": "index.js",
   "directories": {
@@ -17,5 +17,6 @@
     "library"
   ],
   "author": "Tyler Chao",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": "cz848/dateio"
 }
