@@ -57,7 +57,7 @@ dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 
 ### **年 `.Y()` 或 `.y(input?: number | numbers)`**
 取得/设置日期的哪一年。
-**注：**赋值行为与原生Date的`setFullYear`保持一致，即可以用多个数值表示分别设置年/月/日，不同的是月份是从1开始。下同。
+**注：**赋值行为与原生Date的`setFullYear`保持一致，即可以用多个数值表示分别设置年、月、日，不同的是月份是从1开始。下同。
 
 ```javascript
 dateio().Y(); // 2019
@@ -94,12 +94,13 @@ dateio().w(); // 1
 ```
 
 ### **时 `.H() 或 .h(input?: number | numbers)`**
-取得/设置时间的小时数，24小时制。
+取得/设置时间的小时数，24小时制。可以用多个数值表示分别设置时、分、秒、毫秒，下同。
 
 ```javascript
 dateio().H(); // '19'
 dateio().h(); // 19
 dateio().h(12);
+dateio().h(12, 23, 59, 100); // 分别设置时、分、秒、毫秒
 ```
 
 ### **分 `.I() 或 .i(input?: number | numbers)`**
@@ -109,6 +110,7 @@ dateio().h(12);
 dateio().I(); // '55'
 dateio().i(); // 55
 dateio().i(59);
+dateio().i(59, 59);
 ```
 
 ### **秒 `.S() 或 .s(input?: number | numbers)`**
@@ -178,8 +180,9 @@ dateio().set('s', 30);
 ```javascript
 dateio('2019-10-20')
   .add(1, 'd')
-  .subtract(1, 'y')
-  .toString(); // Wed Jan 31 2018 00:00:00 GMT+0800
+  .subtract(1, 'm')
+  .add('-1.5h')
+  .toString(); // Fri Sep 20 2019 22:30:00 GMT+0800 (中国标准时间)
 ```
 
 ### 加法 `.add(value: number, unit?: string)`
@@ -252,7 +255,7 @@ date1.diff(date2, 'd'); // 502
 dateio('2019-10-20').daysInMonth(); // 31
 ```
 
-###　转换成Date对象 `.toDate()`
+### 转换成Date对象 `.toDate()`
 
 ```javascript
 dateio('2019-10-20').toDate();
@@ -261,13 +264,13 @@ dateio('2019-10-20').toDate();
 ### 转换成字符串 `.toString()`
 
 ```javascript
-dateio('2019-10-20').toString(); // 'Fri, 25 Jan 2019 02:00:00 GMT+0800'
+dateio('2019-10-20').toString(); // Sun Oct 20 2019 00:00:00 GMT+0800 (中国标准时间)
 ```
 
 ### 转换成本地化的字符串 `.toLocaleString()`
 
 ```javascript
-dateio('2019-10-20').toLocaleString(); // 2019/1/25 上午12:00:00
+dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
 ```
 
 ## 查询
