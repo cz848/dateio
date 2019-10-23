@@ -55,7 +55,7 @@ dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 
 ## 取值/赋值
 
-### **年 `.Y()` 或 `.y(input?: number | numbers)`**
+### 年 `.Y()` 或 `.y(input?: number | numbers)`
 取得/设置日期的哪一年。
 
 **注：**赋值行为与原生Date的`setFullYear`保持一致，即可以用多个数值表示分别设置年、月、日，不同的是月份是从1开始。下同。
@@ -67,7 +67,7 @@ dateio().y(2000);
 dateio().y(2000, 11, 15);
 ```
 
-### **月 `.M()` 或 `.m(input?: number | numbers)`**
+### 月 `.M()` 或 `.m(input?: number | numbers)`
 取得/设置日期的哪一月，从更符合日常习惯的1开始。大写返回有前导0的字符串格式的月份，小写返回数值型，下同。
 
 ```javascript
@@ -77,7 +77,7 @@ dateio().m(10);
 dateio().m(10, 12);
 ```
 
-### **日 `.D()` 或 `.d(input?: number)`**
+### 日 `.D()` 或 `.d(input?: number)`
 取得/设置日期的哪一天。
 
 ```javascript
@@ -86,7 +86,7 @@ dateio().d(); // 8
 dateio().d(15);
 ```
 
-### **星期 `.W()` 或 `.w()`**
+### 星期 `.W()` 或 `.w()`
 取得日期的星期几。
 
 ```javascript
@@ -94,7 +94,7 @@ dateio().W(); // 星期一
 dateio().w(); // 1
 ```
 
-### **时 `.H()` 或 `.h(input?: number | numbers)`**
+### 时 `.H()` 或 `.h(input?: number | numbers)`
 取得/设置时间的小时数，24小时制。可以用多个数值表示分别设置时、分、秒、毫秒，下同。
 
 ```javascript
@@ -104,7 +104,7 @@ dateio().h(12);
 dateio().h(12, 23, 59, 100); // 分别设置时、分、秒、毫秒
 ```
 
-### **分 `.I()` 或 `.i(input?: number | numbers)`**
+### 分 `.I()` 或 `.i(input?: number | numbers)`
 取得/设置时间的分钟数。
 
 ```javascript
@@ -114,7 +114,7 @@ dateio().i(59);
 dateio().i(59, 59);
 ```
 
-### **秒 `.S()` 或 `.s(input?: number | numbers)`**
+### 秒 `.S()` 或 `.s(input?: number | numbers)`
 取得/设置时间的秒数。
 
 ```javascript
@@ -123,7 +123,7 @@ dateio().s(); // 40
 dateio().s(1);
 ```
 
-### **毫秒 `.MS()` 或 `.ms(input?: number)`**
+### 毫秒 `.MS()` 或 `.ms(input?: number)`
 取得/设置时间的毫秒数。
 
 ```javascript
@@ -132,7 +132,7 @@ dateio().ms(); // 123
 dateio().ms(157);
 ```
 
-### **上下午 `.A()` 或 `.a()`**
+### 上下午 `.A()` 或 `.a()`
 取得时间的上下午。
 
 ```javascript
@@ -140,7 +140,7 @@ dateio().A(); // 上午
 dateio().a(); // 上午
 ```
 
-### **Unix毫秒时间戳 `.valueOf()` 或 `.u(input?: number)`**
+### Unix毫秒时间戳 `.valueOf()` 或 `.u(input?: number)`
 取得/设置时间的Unix毫秒时间戳。
 
 ```javascript
@@ -149,7 +149,7 @@ dateio().u(); // 1571553140345
 dateio().u(1571553140345);
 ```
 
-### **Unix秒时间戳 `.U(input?: number)`**
+### Unix秒时间戳 `.U(input?: number)`
 取得/设置时间的Unix秒时间戳。
 
 ```javascript
@@ -157,7 +157,7 @@ dateio().U(); // 1571553140
 dateio().U(1571553140);
 ```
 
-### **取值 `.get(unit: string)`**
+### 取值 `.get(unit: string)`
 返回`DateIO`对象中相应的数值，对应上面的各种取值。
 
 ```javascript
@@ -165,7 +165,7 @@ dateio().get('m');
 dateio().get('h');
 ```
 
-### **赋值 `.set(unit: string, value: number)`**
+### 赋值 `.set(unit: string, value: number)`
 返回被赋值后的DateIO对象。
 
 ```javascript
