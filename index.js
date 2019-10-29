@@ -1,5 +1,7 @@
 /**
  * 统一处理日期或格式化输出
+ * Author: tyler.chao
+ * github: https://github.com/cz848/dateio
  */
 
 const characterRegExp = /ms|[ymdwhisau]/gi;
