@@ -5,7 +5,7 @@
  */
 
 const characterRegExp = /ms|[ymdwhisau]/gi;
-const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdhis])?$/i;
+const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   apm: ['上午', '下午'],
@@ -206,7 +206,7 @@ class DateIO {
   }
 
   valueOf() {
-    return +this.$date;
+    return this.$date.valueOf();
   }
 
   clone() {
@@ -251,23 +251,29 @@ class DateIO {
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
   // input: '7d', '-1m', '10y', '5.5h'等或数字。
-  // unit: 'y', 'm', 'd', 'h', 'i', 's', 'ms'。
+  // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
   add(input, unit = 'ms') {
     const pattern = String(input).match(addFormatsRegExp);
     if (!pattern) throw new Error(`Invalid to input: "${input}".`);
-    const mapUnit = (pattern[2] || unit).toLowerCase();
-    const number = Number(pattern[1]);
+    const mapUnit = (pattern[2] || unit).toString().toLowerCase();
+    let number = Number(pattern[1]);
     const maps = {
       ms: 1,
       s: 1e3,
       i: 6e4,
       h: 36e5,
       d: 864e5,
+      w: 864e5 * 7,
       m: 864e5 * 30, // ~
-      y: 864e5 * 360, // ~
+      y: 864e5 * 365, // ~
     };
 
-    return this.set('u', number * maps[mapUnit] + this.origin);
+    if(['m', 'y'].indexOf(mapUnit) >= 0) {
+      const integer = Math.floor(number);
+      number = Number(number.toString().replace(/^\d+(?=\.?)/, '0'));
+      this.set(mapUnit, this[mapUnit]() + integer);
+    }
+    return number ? this.set('u', number * maps[mapUnit] + this.origin) : this;
   }
 
   subtract(input, unit = 'ms') {
