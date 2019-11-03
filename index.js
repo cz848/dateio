@@ -271,7 +271,7 @@ class DateIO {
 
     if(['m', 'y'].indexOf(mapUnit) >= 0) {
       const integer = Math.floor(number);
-      number = Number(number.toString().replace(/^\d+(?=\.?)/, '0'));
+      number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
       this.set(mapUnit, this[mapUnit]() + integer);
     }
     return number ? this.set('u', number * maps[mapUnit] + this.origin) : this;
