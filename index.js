@@ -8,16 +8,17 @@ const characterRegExp = /ms|[ymdwhisau]/gi;
 const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-  apm: ['上午', '下午'],
+  // 默认四个时段，可根据需要增减
+  interval: ['凌晨', '上午', '下午', '晚上'],
 };
 
 // 位数不够前补0，为了更好的兼容，用slice替代padStart
 const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
 
 // 首字母大写
-const capitalize = (str = '', prefix = '') => `${prefix}${str.replace(/(^[a-z])/, $1 => $1.toUpperCase())}`;
+const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
 
-// 是否为dateio的实例
+// 是否为 DateIO 的实例
 // eslint-disable-next-line no-use-before-define
 const isInstance = input => input instanceof DateIO;
 
@@ -34,8 +35,7 @@ const toDate = input => {
 
 class DateIO {
   constructor(input = new Date()) {
-    this.i18n();
-    this.init(input);
+    this.i18n().init(input);
   }
 
   init(input) {
@@ -156,14 +156,13 @@ class DateIO {
     return zeroFill(this.ms(), 3);
   }
 
-  // 上下午
-  // am/pm
+  // 时间段
   a() {
-    return this.I18N.apm[Math.floor(this.h() / 12)];
+    const len = this.I18N.interval.length;
+    return this.I18N.interval[Math.floor(this.h() / 24 * len)];
   }
 
-  // 上下午
-  // AM/PM
+  // 时间段
   A() {
     return this.a().toUpperCase();
   }
@@ -223,7 +222,7 @@ class DateIO {
   }
 
   // 返回两个日期的差值，精确到毫秒
-  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|m:months(in 30 days)|y:years(in 360 days)
+  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months(in 30 days)|y: years(in 360 days)
   // isFloat: 是否返回小数
   diff(input, unit = 'ms', isFloat = false) {
     const time = toDate(input);
@@ -234,6 +233,8 @@ class DateIO {
         diff /= 12;
       case 'm': // ~
         diff /= 30;
+      case 'w':
+        if (unit === 'w') diff /= 7;
       case 'd':
         diff /= 24;
       case 'h':
