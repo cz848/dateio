@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="author" content="Tyler Chao">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <title>文档标题</title>
+</head>
+<body>
+  
+</body>
+<script type="module">
+  import dateio from './index.js';
+  window.dateio = dateio;
+  var date = dateio(new Date);
+  console.log(date);
+  console.log(date.toString());
+  console.log(date.origin);
+</script>
+<script src="https://unpkg.com/dayjs@1.8.16/dayjs.min.js"></script>
+</html>

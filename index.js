@@ -12,6 +12,15 @@ const I18N = {
   interval: ['凌晨', '上午', '下午', '晚上'],
 };
 
+// function from moment.js in order to keep the same result
+const monthDiff = (a, b) => {
+  const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
+  const anchor = a.clone().add(wholeMonthDiff, 'm');
+  const c = b < anchor;
+  const anchor2 = a.clone().add(wholeMonthDiff + (c ? -1 : 1), 'm');
+  return Number(-(wholeMonthDiff + (b - anchor) / Math.abs(anchor2 - anchor)) || 0);
+};
+
 // 位数不够前补0，为了更好的兼容，用slice替代padStart
 const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
 
@@ -225,27 +234,18 @@ class DateIO {
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months(in 30 days)|y: years(in 360 days)
   // isFloat: 是否返回小数
   diff(input, unit = 'ms', isFloat = false) {
-    const time = toDate(input);
-    let diff = this - time;
-    /* eslint-disable no-fallthrough */
-    switch (unit) {
-      case 'y': // ~
-        diff /= 12;
-      case 'm': // ~
-        diff /= 30;
-      case 'w':
-        if (unit === 'w') diff /= 7;
-      case 'd':
-        diff /= 24;
-      case 'h':
-        diff /= 60;
-      case 'i':
-        diff /= 60;
-      case 's':
-        diff /= 1000;
-      default:
-    }
-    /* eslint-enable no-fallthrough */
+    const that = new DateIO(input);
+    const md = monthDiff(this, that);
+    let diff = this - that;
+    diff = {
+      s: diff / 1e3,
+      i: diff / 6e4,
+      h: diff / 36e5,
+      d: diff / 864e5,
+      w: diff / (864e5 * 7),
+      m: md,
+      y: md / 12,
+    }[unit] || diff;
 
     return isFloat ? diff : Math.floor(diff);
   }
