@@ -48,11 +48,10 @@ class DateIO {
   }
 
   init(input) {
-    if (input) {
+    if (input !== undefined) {
       this.$date = toDate(input);
       if (Number.isNaN(this.valueOf())) throw new Error(`Invalid Date: "${input}", type: "${typeof input}".`);
     }
-    this.origin = this.valueOf();
     return this;
   }
 
@@ -61,16 +60,22 @@ class DateIO {
     return this;
   }
 
+  $get(type) {
+    const result = this.$date[`get${capitalize(type)}`]();
+    return result + (type === 'month' ? 1 : 0);
+  }
+
   $set(type, ...input) {
+    if (type === 'fullYear' && input.length > 1) input[1] -= 1;
+    else if (type === 'month') input[0] -= 1;
     this.$date[`set${capitalize(type)}`](...input);
-    return this.init();
+    return this;
   }
 
   // 年 (4位)
   // 1970...2019
   y(...input) {
-    if (input.length > 1) input[1] -= 1;
-    return input.length ? this.$set('fullYear', ...input) : this.$date.getFullYear();
+    return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
   }
 
   // 年 (4位)
@@ -82,11 +87,7 @@ class DateIO {
   // 加偏移后的月
   // 1...12
   m(...input) {
-    if (input.length) {
-      input[0] -= 1;
-      return this.$set('month', ...input);
-    }
-    return this.$date.getMonth() + 1;
+    return input.length ? this.$set('month', ...input) : this.$get('month');
   }
 
   // 月 (前导0)
@@ -98,7 +99,7 @@ class DateIO {
   // 日
   // 1...31
   d(...input) {
-    return input.length ? this.$set('date', ...input) : this.$date.getDate();
+    return input.length ? this.$set('date', ...input) : this.$get('date');
   }
 
   // 日 (前导0)
@@ -110,7 +111,7 @@ class DateIO {
   // 周几
   // 0...6
   w() {
-    return this.$date.getDay();
+    return this.$get('day');
   }
 
   // 周几
@@ -122,7 +123,7 @@ class DateIO {
   // 24小时制
   // 0...23
   h(...input) {
-    return input.length ? this.$set('hours', ...input) : this.$date.getHours();
+    return input.length ? this.$set('hours', ...input) : this.$get('hours');
   }
 
   // 24小时制 (前导0)
@@ -134,7 +135,7 @@ class DateIO {
   // 分
   // 0...59
   i(...input) {
-    return input.length ? this.$set('minutes', ...input) : this.$date.getMinutes();
+    return input.length ? this.$set('minutes', ...input) : this.$get('minutes');
   }
 
   // 分 (前导0)
@@ -146,7 +147,7 @@ class DateIO {
   // 秒
   // 0...59
   s(...input) {
-    return input.length ? this.$set('seconds', ...input) : this.$date.getSeconds();
+    return input.length ? this.$set('seconds', ...input) : this.$get('seconds');
   }
 
   // 秒 (前导0)
@@ -158,7 +159,7 @@ class DateIO {
   // 毫秒数
   // 0...999
   ms(...input) {
-    return input.length ? this.$set('milliseconds', ...input) : this.$date.getMilliseconds();
+    return input.length ? this.$set('milliseconds', ...input) : this.$get('milliseconds');
   }
 
   MS() {
@@ -191,18 +192,17 @@ class DateIO {
   // 获取以上格式的日期，每个unit对应其中一种格式
   get(unit = '') {
     const fs = this[unit];
-    return typeof fs === 'function' ? fs.call(this) : undefined;
+    return typeof fs === 'function' ? fs() : undefined;
   }
 
   // 设置以上格式的日期
   set(unit = '', ...input) {
-    const key = unit.toLowerCase();
-    if (typeof this[key] !== 'function') throw new Error(`Invalid set format: "${unit}".`);
-    return this[key](...input);
+    const fs = this[unit.toLowerCase()];
+    return typeof fs === 'function' ? fs(...input) : this;
   }
 
   toDate() {
-    return toDate(this.$date);
+    return this.$date;
   }
 
   toString() {
@@ -218,15 +218,15 @@ class DateIO {
   }
 
   clone() {
-    return new DateIO(this.origin);
+    return new DateIO(this.$date);
   }
 
   // 利用格式化串格式化日期
   format(formats = 'Y-M-D H:I:S') {
     // 执行相应格式化
-    return (formats).replace(characterRegExp, key => {
-      const fs = this[key];
-      return typeof fs === 'function' ? fs.call(this) : fs || key;
+    return (formats).replace(characterRegExp, unit => {
+      const fs = this[unit];
+      return typeof fs === 'function' ? fs() : fs || unit;
     });
   }
 
@@ -247,7 +247,7 @@ class DateIO {
   }
 
   // 返回两个日期的差值，精确到毫秒
-  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months(in 30 days)|y: years(in 360 days)
+  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
   diff(input, unit = 'ms', isFloat = false) {
     const that = new DateIO(input);
@@ -290,7 +290,7 @@ class DateIO {
       number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
       this.set(mapUnit, this[mapUnit]() + integer);
     }
-    return number ? this.set('u', number * maps[mapUnit] + this.origin) : this;
+    return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
   }
 
   subtract(input, unit = 'ms') {
