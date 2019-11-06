@@ -230,6 +230,22 @@ class DateIO {
     });
   }
 
+  startOf(unit, isStartOf = true) {
+    const formats = 'y m d h i s';
+    const format = formats.slice(0, formats.indexOf(unit) + 1);
+    const dates = this.format(format).split(' ').map(Math.floor);
+    const starts = [0, 1, 1, 0, 0, 0, 0];
+    const ends = [0, 12, 0, 23, 59, 59, 999];
+    const input = isStartOf ? starts : ends;
+    input.splice(0, dates.length, ...dates);
+    if (isStartOf) input[1] -= 1;
+    return this.init(input);
+  }
+
+  endOf(unit) {
+    return this.startOf(unit, false);
+  }
+
   // 返回两个日期的差值，精确到毫秒
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months(in 30 days)|y: years(in 360 days)
   // isFloat: 是否返回小数
