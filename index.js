@@ -1,6 +1,6 @@
 /**
  * 统一处理日期或格式化输出
- * Author: tyler.chao
+ * Author: Tyler.Chao
  * github: https://github.com/cz848/dateio
  */
 
@@ -39,7 +39,7 @@ class DateIO {
   }
 
   init(input) {
-    if (input) {
+    if (input !== undefined) {
       this.$date = toDate(input);
       if (Number.isNaN(this.valueOf())) throw new Error(`Invalid Date: "${input}", type: "${typeof input}".`);
     }
