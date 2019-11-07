@@ -181,18 +181,17 @@ class DateIO {
   // 获取以上格式的日期，每个unit对应其中一种格式
   get(unit = '') {
     const fs = this[unit];
-    return typeof fs === 'function' ? fs.call(this) : undefined;
+    return typeof fs === 'function' ? fs() : undefined;
   }
 
   // 设置以上格式的日期
   set(unit = '', ...input) {
-    const key = unit.toLowerCase();
-    if (typeof this[key] !== 'function') throw new Error('Invalid unit format');
-    return this[key](...input);
+    const fs = this[unit.toLowerCase()];
+    return typeof fs === 'function' ? fs(...input) : this;
   }
 
   toDate() {
-    return toDate(this.$date);
+    return this.$date;
   }
 
   toString() {
@@ -214,14 +213,14 @@ class DateIO {
   // 利用格式化串格式化日期
   format(formats = 'Y-M-D H:I:S') {
     // 执行相应格式化
-    return (formats).replace(characterRegExp, key => {
-      const fs = this[key];
-      return typeof fs === 'function' ? fs.call(this) : fs || key;
+    return (formats).replace(characterRegExp, unit => {
+      const fs = this[unit];
+      return typeof fs === 'function' ? fs() : fs || unit;
     });
   }
 
   // 返回两个日期的差值，精确到毫秒
-  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months(in 30 days)|y: years(in 360 days)
+  // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
   diff(input, unit = 'ms', isFloat = false) {
     const time = toDate(input);
@@ -268,7 +267,7 @@ class DateIO {
       y: 864e5 * 365, // ~
     };
 
-    if(['m', 'y'].indexOf(mapUnit) >= 0) {
+    if (['m', 'y'].indexOf(mapUnit) >= 0) {
       const integer = Math.floor(number);
       number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
       this.set(mapUnit, this[mapUnit]() + integer);
