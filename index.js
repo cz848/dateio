@@ -34,7 +34,7 @@ const toDate = input => {
 };
 
 class DateIO {
-  constructor(input = new Date()) {
+  constructor(input = '') {
     this.i18n().init(input);
   }
 
@@ -43,7 +43,6 @@ class DateIO {
       this.$date = toDate(input);
       if (Number.isNaN(this.valueOf())) throw new Error('Invalid Date');
     }
-    this.origin = this.valueOf();
     return this;
   }
 
@@ -54,7 +53,7 @@ class DateIO {
 
   $set(type, ...input) {
     this.$date[`set${capitalize(type)}`](...input);
-    return this.init();
+    return this;
   }
 
   // 年 (4位)
@@ -209,7 +208,7 @@ class DateIO {
   }
 
   clone() {
-    return new DateIO(this.origin);
+    return new DateIO(this.$date);
   }
 
   // 利用格式化串格式化日期
@@ -274,7 +273,7 @@ class DateIO {
       number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
       this.set(mapUnit, this[mapUnit]() + integer);
     }
-    return number ? this.set('u', number * maps[mapUnit] + this.origin) : this;
+    return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
   }
 
   subtract(input, unit = 'ms') {
