@@ -4,12 +4,28 @@
  * github: https://github.com/cz848/dateio
  */
 
-const characterRegExp = /ms|[ymdwhisau]/gi;
+const characterRegExp = /ms|mo|[ymdwhisau]/gi;
 const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
+const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 const I18N = {
+  months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
+  monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+  // months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  // weekdays: ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'],
   // 默认四个时段，可根据需要增减
   interval: ['凌晨', '上午', '下午', '晚上'],
+};
+const unitMap = {
+  y: 'fullYear',
+  m: 'month',
+  d: 'date',
+  w: 'day',
+  h: 'hours',
+  i: 'minutes',
+  s: 'seconds',
+  ms: 'milliseconds',
+  u: 'valueOf',
 };
 
 // function from moment.js in order to keep the same result
@@ -47,158 +63,93 @@ class DateIO {
     this.i18n().init(input);
   }
 
-  init(input) {
-    if (input !== undefined) {
-      this.$date = toDate(input);
-      if (Number.isNaN(this.valueOf())) throw new Error(`Invalid Date: "${input}", type: "${typeof input}".`);
-    }
-    return this;
-  }
-
   i18n(config) {
     this.I18N = { ...I18N, ...config };
     return this;
   }
 
-  $get(type) {
-    const result = this.$date[`get${capitalize(type)}`]();
-    return result + (type === 'month' ? 1 : 0);
-  }
+  init(input) {
+    if (input !== undefined) {
+      this.$date = toDate(input);
+      if (Number.isNaN(this.valueOf())) throw new Error('Invalid Date');
+    }
 
-  $set(type, ...input) {
-    if (type === 'fullYear' && input.length > 1) input[1] -= 1;
-    else if (type === 'month') input[0] -= 1;
-    this.$date[`set${capitalize(type)}`](...input);
+    const { months, monthsShort, weekdays, interval } = this.I18N;
+    const formats = this.$date.toISOString().match(validDateRegExp);
+    const [, Y, M, D, H, I, S, MS] = formats;
+    // 年 (4位)
+    // 1970...2019
+    this.Y = Y;
+    // 年 (4位)
+    // 1970...2019
+    this.y = Number(Y);
+    // 月 (前导0)
+    // 00...11
+    this.m = Number(M) - 1;
+    // 月
+    // 0...11
+    this.M = zeroFill(this.m);
+    // 月份
+    this.Mo = months[this.m];
+    // 缩写月份
+    this.mo = monthsShort[this.m];
+    // 日 (前导0)
+    // 01...31
+    this.D = D;
+    // 日
+    // 1...31
+    this.d = Number(D);
+    // 周几
+    // 0...6
+    this.w = this.$date.getDay();
+    // 周几
+    // 本地化后的星期x
+    this.W = weekdays[this.w];
+    // 24小时制 (前导0)
+    // 00...23
+    this.h = (Number(H) - this.$date.getTimezoneOffset() / 60) % 24;
+    // 24小时制
+    // 0...23
+    this.H = zeroFill(this.h);
+    // 分 (前导0)
+    // 00...59
+    this.I = I;
+    // 分
+    // 0...59
+    this.i = Number(I);
+    // 秒 (前导0)
+    // 00...59
+    this.S = S;
+    // 秒
+    // 0...59
+    this.s = Number(S);
+    // 毫秒数(前导0)
+    // 0...999
+    this.MS = MS;
+    // 毫秒数
+    // 000...999
+    this.ms = Number(MS);
+    // 时间段
+    this.a = interval[Math.floor(this.h / 24 * interval.length)];
+    // 时间段
+    this.A = this.a.toUpperCase();
+    // 毫秒时间戳 (unix格式)
+    // 0...1571136267050
+    this.u = this.$date.valueOf();
+    // 秒时间戳 (unix格式)
+    // 0...1542759768
+    this.U = Math.floor(this.u / 1000);
     return this;
   }
 
-  // 年 (4位)
-  // 1970...2019
-  y(...input) {
-    return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
+  get(unit = 'u') {
+    return this[unit] || undefined;
   }
 
-  // 年 (4位)
-  // 1970...2019
-  Y() {
-    return this.y();
-  }
-
-  // 加偏移后的月
-  // 1...12
-  m(...input) {
-    return input.length ? this.$set('month', ...input) : this.$get('month');
-  }
-
-  // 月 (前导0)
-  // 01...12
-  M() {
-    return zeroFill(this.m());
-  }
-
-  // 日
-  // 1...31
-  d(...input) {
-    return input.length ? this.$set('date', ...input) : this.$get('date');
-  }
-
-  // 日 (前导0)
-  // 01...31
-  D() {
-    return zeroFill(this.d());
-  }
-
-  // 周几
-  // 0...6
-  w() {
-    return this.$get('day');
-  }
-
-  // 周几
-  // 本地化后的星期x
-  W() {
-    return this.I18N.weekdays[this.w()];
-  }
-
-  // 24小时制
-  // 0...23
-  h(...input) {
-    return input.length ? this.$set('hours', ...input) : this.$get('hours');
-  }
-
-  // 24小时制 (前导0)
-  // 00...23
-  H() {
-    return zeroFill(this.h());
-  }
-
-  // 分
-  // 0...59
-  i(...input) {
-    return input.length ? this.$set('minutes', ...input) : this.$get('minutes');
-  }
-
-  // 分 (前导0)
-  // 00...59
-  I() {
-    return zeroFill(this.i());
-  }
-
-  // 秒
-  // 0...59
-  s(...input) {
-    return input.length ? this.$set('seconds', ...input) : this.$get('seconds');
-  }
-
-  // 秒 (前导0)
-  // 00...59
-  S() {
-    return zeroFill(this.s());
-  }
-
-  // 毫秒数
-  // 0...999
-  ms(...input) {
-    return input.length ? this.$set('milliseconds', ...input) : this.$get('milliseconds');
-  }
-
-  MS() {
-    return zeroFill(this.ms(), 3);
-  }
-
-  // 时间段
-  a() {
-    const len = this.I18N.interval.length;
-    return this.I18N.interval[Math.floor(this.h() / 24 * len)];
-  }
-
-  // 时间段
-  A() {
-    return this.a().toUpperCase();
-  }
-
-  // 毫秒时间戳 (unix格式)
-  // 0...1571136267050
-  u(input) {
-    return input ? this.init(input) : this.valueOf();
-  }
-
-  // 秒时间戳 (unix格式)
-  // 0...1542759768
-  U(input) {
-    return input ? this.u(input * 1000) : Math.floor(this.u() / 1000);
-  }
-
-  // 获取以上格式的日期，每个unit对应其中一种格式
-  get(unit = '') {
-    const fs = this[unit];
-    return typeof fs === 'function' ? fs() : undefined;
-  }
-
-  // 设置以上格式的日期
-  set(unit = '', ...input) {
-    const fs = this[unit.toLowerCase()];
-    return typeof fs === 'function' ? fs(...input) : this;
+  set(unit, ...input) {
+    const type = unitMap[unit.toLowerCase()];
+    this.$date[`set${capitalize(type)}`](...input);
+    return this.init();
   }
 
   toDate() {
@@ -224,10 +175,7 @@ class DateIO {
   // 利用格式化串格式化日期
   format(formats = 'Y-M-D H:I:S') {
     // 执行相应格式化
-    return (formats).replace(characterRegExp, unit => {
-      const fs = this[unit];
-      return typeof fs === 'function' ? fs() : fs || unit;
-    });
+    return (formats).replace(characterRegExp, unit => this.get(unit) || unit);
   }
 
   startOf(unit, isStartOf = true) {
@@ -288,7 +236,7 @@ class DateIO {
     if(['m', 'y'].indexOf(mapUnit) >= 0) {
       const integer = Math.floor(number);
       number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
-      this.set(mapUnit, this[mapUnit]() + integer);
+      this.set(mapUnit, this.get(mapUnit) + integer);
     }
     return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
   }
