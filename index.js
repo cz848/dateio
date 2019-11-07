@@ -51,7 +51,14 @@ class DateIO {
     return this;
   }
 
+  $get(type) {
+    const result = this.$date[`get${capitalize(type)}`]();
+    return result + (type === 'month' ? 1 : 0);
+  }
+
   $set(type, ...input) {
+    if (type === 'fullYear' && input.length > 1) input[1] -= 1;
+    else if (type === 'month') input[0] -= 1;
     this.$date[`set${capitalize(type)}`](...input);
     return this;
   }
@@ -59,8 +66,7 @@ class DateIO {
   // 年 (4位)
   // 1970...2019
   y(...input) {
-    if (input.length > 1) input[1] -= 1;
-    return input.length ? this.$set('fullYear', ...input) : this.$date.getFullYear();
+    return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
   }
 
   // 年 (4位)
@@ -72,11 +78,7 @@ class DateIO {
   // 加偏移后的月
   // 1...12
   m(...input) {
-    if (input.length) {
-      input[0] -= 1;
-      return this.$set('month', ...input);
-    }
-    return this.$date.getMonth() + 1;
+    return input.length ? this.$set('month', ...input) : this.$get('month');
   }
 
   // 月 (前导0)
@@ -88,7 +90,7 @@ class DateIO {
   // 日
   // 1...31
   d(...input) {
-    return input.length ? this.$set('date', ...input) : this.$date.getDate();
+    return input.length ? this.$set('date', ...input) : this.$get('date');
   }
 
   // 日 (前导0)
@@ -100,7 +102,7 @@ class DateIO {
   // 周几
   // 0...6
   w() {
-    return this.$date.getDay();
+    return this.$get('day');
   }
 
   // 周几
@@ -112,7 +114,7 @@ class DateIO {
   // 24小时制
   // 0...23
   h(...input) {
-    return input.length ? this.$set('hours', ...input) : this.$date.getHours();
+    return input.length ? this.$set('hours', ...input) : this.$get('hours');
   }
 
   // 24小时制 (前导0)
@@ -124,7 +126,7 @@ class DateIO {
   // 分
   // 0...59
   i(...input) {
-    return input.length ? this.$set('minutes', ...input) : this.$date.getMinutes();
+    return input.length ? this.$set('minutes', ...input) : this.$get('minutes');
   }
 
   // 分 (前导0)
@@ -136,7 +138,7 @@ class DateIO {
   // 秒
   // 0...59
   s(...input) {
-    return input.length ? this.$set('seconds', ...input) : this.$date.getSeconds();
+    return input.length ? this.$set('seconds', ...input) : this.$get('seconds');
   }
 
   // 秒 (前导0)
@@ -148,7 +150,7 @@ class DateIO {
   // 毫秒数
   // 0...999
   ms(...input) {
-    return input.length ? this.$set('milliseconds', ...input) : this.$date.getMilliseconds();
+    return input.length ? this.$set('milliseconds', ...input) : this.$get('milliseconds');
   }
 
   MS() {
