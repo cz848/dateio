@@ -41,7 +41,7 @@ class DateIO {
   init(input) {
     if (input !== undefined) {
       this.$date = toDate(input);
-      if (Number.isNaN(this.valueOf())) throw new Error(`Invalid Date: "${input}", type: "${typeof input}".`);
+      if (Number.isNaN(this.valueOf())) throw new Error('Invalid Date');
     }
     this.origin = this.valueOf();
     return this;
@@ -188,7 +188,7 @@ class DateIO {
   // 设置以上格式的日期
   set(unit = '', ...input) {
     const key = unit.toLowerCase();
-    if (typeof this[key] !== 'function') throw new Error(`Invalid set format: "${unit}".`);
+    if (typeof this[key] !== 'function') throw new Error('Invalid unit format');
     return this[key](...input);
   }
 
@@ -255,7 +255,7 @@ class DateIO {
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
   add(input, unit = 'ms') {
     const pattern = String(input).match(addFormatsRegExp);
-    if (!pattern) throw new Error(`Invalid to input: "${input}".`);
+    if (!pattern) throw new Error('Invalid input format');
     const mapUnit = (pattern[2] || unit).toString().toLowerCase();
     let number = Number(pattern[1]);
     const maps = {
