@@ -52,8 +52,8 @@ class DateIO {
   }
 
   $get(type) {
-    const result = this.$date[`get${capitalize(type)}`]();
-    return result + (type === 'month' ? 1 : 0);
+    const value = this.$date[`get${capitalize(type)}`]();
+    return value + (type === 'month' ? 1 : 0);
   }
 
   $set(type, ...input) {
@@ -183,13 +183,13 @@ class DateIO {
   // 获取以上格式的日期，每个unit对应其中一种格式
   get(unit = '') {
     const fs = this[unit];
-    return typeof fs === 'function' ? fs() : undefined;
+    return typeof fs === 'function' ? fs.call(this) : undefined;
   }
 
   // 设置以上格式的日期
   set(unit = '', ...input) {
     const fs = this[unit.toLowerCase()];
-    return typeof fs === 'function' ? fs(...input) : this;
+    return typeof fs === 'function' ? fs.call(this, ...input) : this;
   }
 
   toDate() {
@@ -217,7 +217,7 @@ class DateIO {
     // 执行相应格式化
     return (formats).replace(characterRegExp, unit => {
       const fs = this[unit];
-      return typeof fs === 'function' ? fs() : fs || unit;
+      return typeof fs === 'function' ? fs.call(this) : fs || unit;
     });
   }
 
