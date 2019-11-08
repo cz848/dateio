@@ -4,6 +4,12 @@
  * github: https://github.com/cz848/dateio
  */
 
+// 位数不够前补0，为了更好的兼容，用slice替代padStart
+const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
+
+// 首字母大写
+const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
+
 const characterRegExp = /ms|mo|[ymdwhisau]/gi;
 const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
@@ -25,23 +31,15 @@ const unitMap = {
   i: 'minutes',
   s: 'seconds',
   ms: 'milliseconds',
-  u: 'valueOf',
 };
-
 // function from moment.js in order to keep the same result
 const monthDiff = (a, b) => {
-  const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
+  const wholeMonthDiff = (b.y - a.y) * 12 + (b.m - a.m);
   const anchor = a.clone().add(wholeMonthDiff, 'm');
   const c = b < anchor;
   const anchor2 = a.clone().add(wholeMonthDiff + (c ? -1 : 1), 'm');
   return Number(-(wholeMonthDiff + (b - anchor) / Math.abs(anchor2 - anchor)) || 0);
 };
-
-// 位数不够前补0，为了更好的兼容，用slice替代padStart
-const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
-
-// 首字母大写
-const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
 
 // 是否为 DateIO 的实例
 // eslint-disable-next-line no-use-before-define
@@ -59,7 +57,7 @@ const toDate = input => {
 };
 
 class DateIO {
-  constructor(input = new Date()) {
+  constructor(input = '') {
     this.i18n().init(input);
   }
 
@@ -75,7 +73,7 @@ class DateIO {
     }
 
     const { months, monthsShort, weekdays, interval } = this.I18N;
-    const formats = this.$date.toISOString().match(validDateRegExp);
+    const formats = new Date(+this.$date - this.$date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
     const [, Y, M, D, H, I, S, MS] = formats;
     // 年 (4位)
     // 1970...2019
@@ -83,12 +81,12 @@ class DateIO {
     // 年 (4位)
     // 1970...2019
     this.y = Number(Y);
+    // 加偏移后的月
+    // 1...12
+    this.M = M;
     // 月 (前导0)
     // 00...11
     this.m = Number(M) - 1;
-    // 月
-    // 0...11
-    this.M = zeroFill(this.m);
     // 月份
     this.Mo = months[this.m];
     // 缩写月份
@@ -105,12 +103,12 @@ class DateIO {
     // 周几
     // 本地化后的星期x
     this.W = weekdays[this.w];
-    // 24小时制 (前导0)
-    // 00...23
-    this.h = (Number(H) - this.$date.getTimezoneOffset() / 60) % 24;
     // 24小时制
     // 0...23
-    this.H = zeroFill(this.h);
+    this.H = H;
+    // 24小时制 (前导0)
+    // 00...23
+    this.h = Number(H);
     // 分 (前导0)
     // 00...59
     this.I = I;
@@ -169,7 +167,7 @@ class DateIO {
   }
 
   clone() {
-    return new DateIO(this.$date);
+    return new DateIO(+this.$date);
   }
 
   // 利用格式化串格式化日期
@@ -182,11 +180,11 @@ class DateIO {
     const formats = 'y m d h i s';
     const format = formats.slice(0, formats.indexOf(unit) + 1);
     const dates = this.format(format).split(' ').map(Math.floor);
-    const starts = [0, 1, 1, 0, 0, 0, 0];
-    const ends = [0, 12, 0, 23, 59, 59, 999];
+    const starts = [0, 0, 1, 0, 0, 0, 0];
+    const ends = [0, 11, 0, 23, 59, 59, 999];
     const input = isStartOf ? starts : ends;
     input.splice(0, dates.length, ...dates);
-    if (isStartOf) input[1] -= 1;
+    if (!isStartOf) input[1] += 1;
     return this.init(input);
   }
 
@@ -219,7 +217,7 @@ class DateIO {
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
   add(input, unit = 'ms') {
     const pattern = String(input).match(addFormatsRegExp);
-    if (!pattern) throw new Error(`Invalid to input: "${input}".`);
+    if (!pattern) throw new Error(`Invalid add format`);
     const mapUnit = (pattern[2] || unit).toString().toLowerCase();
     let number = Number(pattern[1]);
     const maps = {
@@ -247,7 +245,7 @@ class DateIO {
 
   // 计算某个月有几天
   daysInMonth() {
-    return this.add('1m').set('d', 0).d();
+    return this.add('1m').set('d', 0).get('d');
   }
 
   // 比较两个同格式的日期是否相同，默认精确到毫秒
