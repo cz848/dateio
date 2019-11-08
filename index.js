@@ -4,6 +4,12 @@
  * github: https://github.com/cz848/dateio
  */
 
+// 位数不够前补0，为了更好的兼容，用slice替代padStart
+const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
+
+// 首字母大写
+const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
+
 const characterRegExp = /ms|[ymdwhisau]/gi;
 const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const I18N = {
@@ -11,12 +17,6 @@ const I18N = {
   // 默认四个时段，可根据需要增减
   interval: ['凌晨', '上午', '下午', '晚上'],
 };
-
-// 位数不够前补0，为了更好的兼容，用slice替代padStart
-const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
-
-// 首字母大写
-const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
 
 // 是否为 DateIO 的实例
 // eslint-disable-next-line no-use-before-define
@@ -209,7 +209,7 @@ class DateIO {
   }
 
   clone() {
-    return new DateIO(this.$date);
+    return new DateIO(+this.$date);
   }
 
   // 利用格式化串格式化日期
@@ -272,7 +272,7 @@ class DateIO {
     if (['m', 'y'].indexOf(mapUnit) >= 0) {
       const integer = Math.floor(number);
       number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
-      this.set(mapUnit, this[mapUnit]() + integer);
+      this.set(mapUnit, this.get(mapUnit) + integer);
     }
     return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
   }
@@ -283,7 +283,7 @@ class DateIO {
 
   // 计算某个月有几天
   daysInMonth() {
-    return this.add('1m').set('d', 0).d();
+    return this.add('1m').set('d', 0).get('d');
   }
 
   // 比较两个同格式的日期是否相同，默认精确到毫秒
