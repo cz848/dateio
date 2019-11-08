@@ -54,11 +54,11 @@ class DateIO {
     if (/[MDHIS]/.test(unit)) {
       res = zeroFill(res, unit === 'MS' ? 3 : 2);
     } else if (unit === 'y') {
-      res = res.toString().slice(2);
+      res = res.toString().slice(-2);
     } else if (unit === 'U') {
       res = Math.floor(res / 1000);
     }
-    return res || undefined;
+    return res;
   }
 
   toString() {
