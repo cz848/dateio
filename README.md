@@ -66,6 +66,8 @@ dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 ```javascript
 dateio().Y(); // 2019
 dateio().y(); // 2019
+dateio('100').Y(); // 0100
+dateio('100').y(); // 100
 dateio().y(2000);
 dateio().y(2000, 11, 15);
 ```
@@ -190,7 +192,7 @@ dateio('2019-10-20')
 ```
 
 ### 加法 `.add(value: number, unit?: string)`
-对日期进行+-运算，默认精确到毫秒，可传小数。
+对日期进行+-运算，默认精确到毫秒，可传小数（年和月的小数有一定误差）。
 - input: `7d`, `-1m`, `10y`, `5.5h`等或数字。
 - unit: `y`, `m`, `d`, `w`, `h`, `i`, `s`, `ms`。
 
@@ -241,7 +243,7 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `U`        | 0-1542759768    | 秒时间戳 (unix格式)  |
 
 ### 比较 `.diff(input: Date like | DateIO, unit?: string, float?: boolean)`
-返回两个日期的差值，精确到毫秒
+返回两个日期的差值，精确到毫秒(年和月分别按360天和30天计算)
 
 ```javascript
 const date1 = dateio('2019-10-20');

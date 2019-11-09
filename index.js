@@ -63,16 +63,16 @@ class DateIO {
     return this;
   }
 
-  // 年 (4位)
-  // 1970...2019
+  // 年
+  // 100...2019
   y(...input) {
     return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
   }
 
   // 年 (4位)
-  // 1970...2019
+  // 0100...2019
   Y() {
-    return this.y();
+    return zeroFill(this.y(), 4);
   }
 
   // 加偏移后的月
