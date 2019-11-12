@@ -282,7 +282,7 @@ class DateIO {
 
   // 计算某个月有几天
   daysInMonth() {
-    return this.add('1m').set('d', 0).get('d');
+    return this.clone().set('d', 32).set('d', 0).get('d');
   }
 
   // 比较两个同格式的日期是否相同，默认精确到毫秒
