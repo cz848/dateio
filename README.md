@@ -254,7 +254,7 @@ date1.diff(date2, 'm', true); // 16.73333333333333
 date1.diff(date2, 'd'); // 502
 ```
 
-### 计算某月有几天 `.daysInMonth()`
+### 获取某月有多少天 `.daysInMonth()`
 
 ```javascript
 dateio('2019-10-20').daysInMonth(); // 31
@@ -287,6 +287,14 @@ dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
 dateio().isSame(dateio()); // true
 dateio().isSame(new Date, 'y'); // true
 dateio().isSame(1571587652864, 'm');
+```
+
+### 是否为闰年 `.isLeapYear()`
+
+```javascript
+dateio().isLeapYear(); // true or false
+dateio('2019').isLeapYear(); // false
+dateio('2016').isLeapYear(); // true
 ```
 
 ## 国际化

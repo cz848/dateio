@@ -52,7 +52,7 @@ class DateIO {
 
   $get(type) {
     const value = this.$date[`get${capitalize(type)}`]();
-    return value + (type === 'month' ? 1 : 0);
+    return value + (type === 'month');
   }
 
   $set(type, ...input) {
@@ -280,9 +280,16 @@ class DateIO {
     return this.add(`-${input}`, unit);
   }
 
-  // 计算某个月有几天
+  // 是否为闰年
+  isLeapYear() {
+    const y = this.get('y');
+    return y % 100 ? y % 4 === 0 : y % 400 === 0;
+  }
+
+  // 获取某月有多少天
   daysInMonth() {
-    return this.clone().set('d', 32).set('d', 0).get('d');
+    const monthDays = [31, 28 + this.isLeapYear(), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return monthDays[this.get('m') - 1];
   }
 
   // 比较两个同格式的日期是否相同，默认精确到毫秒
