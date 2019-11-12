@@ -41,7 +41,6 @@ class DateIO {
   init(input) {
     if (input !== undefined) {
       this.$date = toDate(input);
-      if (Number.isNaN(this.valueOf())) throw new Error('Invalid Date');
     }
     return this;
   }
@@ -255,7 +254,7 @@ class DateIO {
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
   add(input, unit = 'ms') {
     const pattern = String(input).match(addFormatsRegExp);
-    if (!pattern) throw new Error('Invalid input format');
+    if (!pattern) return this;
     const mapUnit = (pattern[2] || unit).toString().toLowerCase();
     let number = Number(pattern[1]);
     const maps = {
