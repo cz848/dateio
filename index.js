@@ -5,16 +5,16 @@
  */
 
 // 位数不够前补0，为了更好的兼容，用slice替代padStart
-const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength);
+const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
 // 首字母大写
-const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
+const capitalize = str => str.toString().replace(/^[a-z]/, a => a.toUpperCase());
 
 // 取整数部分
 const intPart = n => Number.parseInt(n, 10);
 
-const characterRegExp = /ms|[ymdwhisau]/gi;
-const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
+const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
+const addUnitsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
@@ -32,7 +32,7 @@ const toDate = input => {
   if (input instanceof Date) return input;
   // fix: ISOString
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO:与原生行为有出入
+  // TODO: 与原生行为有出入
   if (Array.isArray(input) && input.length !== 1) return new Date(...input);
   return new Date(input);
 };
@@ -216,12 +216,9 @@ class DateIO {
   }
 
   // 利用格式化串格式化日期
-  format(formats = 'Y-M-D H:I:S') {
+  format(formats) {
     // 执行相应格式化
-    return (formats).replace(characterRegExp, unit => {
-      const fs = this[unit];
-      return typeof fs === 'function' ? fs.call(this) : fs || unit;
-    });
+    return (formats || 'Y-M-D H:I:S').replace(formatsRegExp, unit => this.get(unit));
   }
 
   // 返回两个日期的差值，精确到毫秒
@@ -257,7 +254,7 @@ class DateIO {
   // input: '7d', '-1m', '10y', '5.5h'等或数字。
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
   add(input, unit = 'ms') {
-    const pattern = String(input).match(addFormatsRegExp);
+    const pattern = String(input).match(addUnitsRegExp);
     if (!pattern) return this;
     const mapUnit = (pattern[2] || unit).toString().toLowerCase();
     let number = Number(pattern[1]);
