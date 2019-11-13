@@ -10,6 +10,9 @@ const zeroFill = (number, targetLength = 2) => `00${number}`.slice(-targetLength
 // 首字母大写
 const capitalize = str => typeof str === 'string' ? str.replace(/^[a-z]/, a => a.toUpperCase()) : str;
 
+// 取整数部分
+const intPart = n => Number.parseInt(n, 10);
+
 const characterRegExp = /ms|[ymdwhisau]/gi;
 const addFormatsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
 const I18N = {
@@ -247,7 +250,7 @@ class DateIO {
     }
     /* eslint-enable no-fallthrough */
 
-    return isFloat ? diff : Number.parseInt(diff, 10);
+    return isFloat ? diff : intPart(diff);
   }
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
@@ -270,8 +273,8 @@ class DateIO {
     };
 
     if (['m', 'y'].indexOf(mapUnit) >= 0) {
-      const integer = Math.floor(number);
-      number = Number(number.toString().replace(/^(?:[+-]?)\d+(?=\.?)/g, '0'));
+      const integer = intPart(number);
+      number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
       this.set(mapUnit, this.get(mapUnit) + integer);
     }
     return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
