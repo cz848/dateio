@@ -24,10 +24,11 @@ const isInstance = input => input instanceof DateIO;
 
 // 转换为可识别的日期格式
 const toDate = input => {
-  if (!input) return new Date();
+  if (!(input || input === 0)) return new Date();
   if (isInstance(input)) return input.$date;
   if (input instanceof Date) return input;
-  if (typeof input === 'string') return new Date(input.replace(/[.-]/g, '/'));
+  // fix: ISOString
+  if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
   // TODO:与原生行为有出入
   if (Array.isArray(input) && input.length !== 1) return new Date(...input);
   return new Date(input);
@@ -246,7 +247,7 @@ class DateIO {
     }
     /* eslint-enable no-fallthrough */
 
-    return isFloat ? diff : Math.floor(diff);
+    return isFloat ? diff : Number.parseInt(diff, 10);
   }
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
@@ -292,7 +293,7 @@ class DateIO {
     return monthDays[this.get('m') - 1];
   }
 
-  // 比较两个同格式的日期是否相同，默认精确到毫秒
+  // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
   isSame(input, unit = 'u') {
     const thisTime = this.get(unit);
     const thatTime = new DateIO(input).get(unit);
