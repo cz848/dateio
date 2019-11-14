@@ -174,16 +174,16 @@ class DateIO {
     return this.a().toUpperCase();
   }
 
-  // 毫秒时间戳 (unix格式)
+  // unix 偏移量 (毫秒)
   // 0...1571136267050
-  u(input) {
-    return input ? this.init(input) : this.valueOf();
+  u(...input) {
+    return input.length ? this.init(input[0]) : this.valueOf();
   }
 
-  // 秒时间戳 (unix格式)
+  // Unix 时间戳 (秒) 
   // 0...1542759768
-  U(input) {
-    return input ? this.u(input * 1000) : Math.floor(this.u() / 1000);
+  U(...input) {
+    return input.length ? this.init(input[0] * 1000) : Math.round(this / 1000);
   }
 
   // 获取以上格式的日期，每个unit对应其中一种格式

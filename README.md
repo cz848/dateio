@@ -239,10 +239,10 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `ms`       | 0-999           | 毫秒                |
 | `MS`       | 000-999         | 毫秒，带前导0，字符串  |
 | `A` 或 `a` | 凌晨 上午 下午 晚上 | 时间段              |
-| `u`        | 0-1571136267050 | 毫秒时间戳 (unix格式) |
-| `U`        | 0-1542759768    | 秒时间戳 (unix格式)  |
+| `u`        | 0-1571136267050 | unix 偏移量(毫秒)   |
+| `U`        | 0-1542759768    | unix 时间戳(秒)     |
 
-### 比较 `.diff(input: Date like | DateIO, unit?: string, float?: boolean)`
+### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
 返回两个日期的差值，精确到毫秒(年和月分别按360天和30天计算)
 
 ```javascript
