@@ -8,13 +8,16 @@
 const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
 // 首字母大写
-const capitalize = str => str.toString().replace(/^[a-z]/, a => a.toUpperCase());
+const capitalize = str => str.replace(/^[a-z]/, a => a.toUpperCase());
 
 // 取整数部分
 const intPart = n => Number.parseInt(n, 10);
 
+// 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
-const addUnitsRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/i;
+const getUnitRegExp = /^MS|ms|[YMDWHISAUymdwhisau]$/;
+const setUnitRegExp = /^ms|[Uymdhisu]$/;
+const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
 const I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
@@ -185,14 +188,12 @@ class DateIO {
 
   // 获取以上格式的日期，每个unit对应其中一种格式
   get(unit = '') {
-    const fs = this[unit];
-    return typeof fs === 'function' ? fs.call(this) : undefined;
+    return getUnitRegExp.test(unit) ? this[unit]() : undefined;
   }
 
   // 设置以上格式的日期
   set(unit = '', ...input) {
-    const fs = this[unit.toLowerCase()];
-    return typeof fs === 'function' ? fs.call(this, ...input) : this;
+    return setUnitRegExp.test(unit) ? this[unit](...input) : this;
   }
 
   toDate() {
@@ -217,8 +218,7 @@ class DateIO {
 
   // 利用格式化串格式化日期
   format(formats) {
-    // 执行相应格式化
-    return (formats || 'Y-M-D H:I:S').replace(formatsRegExp, unit => this.get(unit));
+    return String(formats || 'Y-M-D H:I:S').replace(formatsRegExp, unit => this[unit]());
   }
 
   // 返回两个日期的差值，精确到毫秒
@@ -253,11 +253,19 @@ class DateIO {
   // 对日期进行+-运算，默认精确到毫秒，可传小数
   // input: '7d', '-1m', '10y', '5.5h'等或数字。
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
-  add(input, unit = 'ms') {
-    const pattern = String(input).match(addUnitsRegExp);
+  add(input, unit) {
+    const pattern = String(input).match(addUnitRegExp);
     if (!pattern) return this;
-    const mapUnit = (pattern[2] || unit).toString().toLowerCase();
+
+    const addUnit = pattern[2] || unit || 'ms';
     let number = Number(pattern[1]);
+    // 年月整数部分单独处理
+    if (['m', 'y'].indexOf(addUnit) >= 0) {
+      const integer = intPart(number);
+      number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
+      this.set(addUnit, this[addUnit]() + integer);
+    }
+
     const maps = {
       ms: 1,
       s: 1e3,
@@ -268,13 +276,7 @@ class DateIO {
       m: 864e5 * 30, // ~
       y: 864e5 * 365, // ~
     };
-
-    if (['m', 'y'].indexOf(mapUnit) >= 0) {
-      const integer = intPart(number);
-      number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
-      this.set(mapUnit, this.get(mapUnit) + integer);
-    }
-    return number ? this.set('u', number * maps[mapUnit] + this.valueOf()) : this;
+    return number ? this.init(number * maps[addUnit] + this.valueOf()) : this;
   }
 
   subtract(input, unit = 'ms') {
@@ -283,14 +285,14 @@ class DateIO {
 
   // 是否为闰年
   isLeapYear() {
-    const y = this.get('y');
+    const y = this.y();
     return y % 100 ? y % 4 === 0 : y % 400 === 0;
   }
 
   // 获取某月有多少天
   daysInMonth() {
     const monthDays = [31, 28 + this.isLeapYear(), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return monthDays[this.get('m') - 1];
+    return monthDays[this.m() - 1];
   }
 
   // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
