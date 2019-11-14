@@ -18,6 +18,16 @@ const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^MS|ms|[YMDWHISAUymdwhisau]$/;
 const setUnitRegExp = /^ms|[Uymdhisu]$/;
 const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
+const numberUnitMap = {
+  ms: 1,
+  s: 1e3,
+  i: 6e4,
+  h: 36e5,
+  d: 864e5,
+  w: 864e5 * 7,
+  m: 864e5 * 30, // ~
+  y: 864e5 * 365, // ~
+};
 const I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
@@ -224,28 +234,10 @@ class DateIO {
   // 返回两个日期的差值，精确到毫秒
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
-  diff(input, unit = 'ms', isFloat = false) {
+  diff(input, unit, isFloat = false) {
     const time = toDate(input);
     let diff = this - time;
-    /* eslint-disable no-fallthrough */
-    switch (unit) {
-      case 'y': // ~
-        diff /= 12;
-      case 'm': // ~
-        diff /= 30;
-      case 'w':
-        if (unit === 'w') diff /= 7;
-      case 'd':
-        diff /= 24;
-      case 'h':
-        diff /= 60;
-      case 'i':
-        diff /= 60;
-      case 's':
-        diff /= 1000;
-      default:
-    }
-    /* eslint-enable no-fallthrough */
+    diff = diff / numberUnitMap[unit || 'ms'] || diff;
 
     return isFloat ? diff : intPart(diff);
   }
@@ -266,17 +258,7 @@ class DateIO {
       this.set(addUnit, this[addUnit]() + integer);
     }
 
-    const maps = {
-      ms: 1,
-      s: 1e3,
-      i: 6e4,
-      h: 36e5,
-      d: 864e5,
-      w: 864e5 * 7,
-      m: 864e5 * 30, // ~
-      y: 864e5 * 365, // ~
-    };
-    return number ? this.init(number * maps[addUnit] + this.valueOf()) : this;
+    return number ? this.init(number * numberUnitMap[addUnit] + this.valueOf()) : this;
   }
 
   subtract(input, unit = 'ms') {
