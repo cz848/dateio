@@ -42,7 +42,7 @@ dateio([2019, 10, 20, 15, 20, 45]);
 dateio(new Date(2019, 10, 20));
 ```
 
-#### Unix时间戳(毫秒)
+#### Unix 偏移量(毫秒)
 
 ```javascript
 dateio(1568781876406);
@@ -135,6 +135,7 @@ dateio().s(1);
 dateio().MS(); // '089'
 dateio().ms(); // 123
 dateio().ms(157);
+dateio().ms(576869);
 ```
 
 ### 上下午 `.A()` 或 `.a()`
@@ -145,7 +146,7 @@ dateio().A(); // 上午
 dateio().a(); // 上午
 ```
 
-### Unix毫秒时间戳 `.valueOf()` 或 `.u(input?: number)`
+### Unix 偏移量(毫秒) `.valueOf()` 或 `.u(input?: number)`
 取得/设置时间的Unix毫秒时间戳。
 
 ```javascript
@@ -154,11 +155,12 @@ dateio().u(); // 1571553140345
 dateio().u(1571553140345);
 ```
 
-### Unix秒时间戳 `.U(input?: number)`
-取得/设置时间的Unix秒时间戳。
+### Unix 时间戳(秒) `.U(input?: number)`
+取得/设置时间的Unix秒时间戳。**注：为了更符合实际场景，这里改为四舍五入取值**
 
 ```javascript
 dateio().U(); // 1571553140
+dateio(1571553140545).U(); // 1571553141
 dateio().U(1571553140);
 ```
 
@@ -243,14 +245,14 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `U`        | 0-1542759768    | unix 时间戳(秒)     |
 
 ### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
-返回两个日期的差值，精确到毫秒(年和月分别按360天和30天计算)
+返回两个日期的差值，精确到毫秒(年和月分别按365天和30天计算)
 
 ```javascript
 const date1 = dateio('2019-10-20');
 const date2 = dateio('2018-06-05');
 date1.diff(date2); // 43372800000
 date1.diff(date2, 'm'); // 16
-date1.diff(date2, 'm', true); // 16.73333333333333
+date1.diff(date2, 'm', true); // 16.733333333333334
 date1.diff(date2, 'd'); // 502
 ```
 
