@@ -18,6 +18,7 @@ const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^MS|ms|[YMDWHISAUymdwhisau]$/;
 const setUnitRegExp = /^ms|[Uymdhisu]$/;
 const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
+// 每个时间单位对应的毫秒数
 const numberUnitMap = {
   ms: 1,
   s: 1e3,
@@ -51,14 +52,12 @@ const toDate = input => {
 };
 
 class DateIO {
-  constructor(input = '') {
+  constructor(input) {
     this.i18n().init(input);
   }
 
   init(input) {
-    if (input !== undefined) {
-      this.$date = toDate(input);
-    }
+    this.$date = toDate(input);
     return this;
   }
 
