@@ -18,5 +18,10 @@
   ],
   "author": "Tyler Chao",
   "license": "MIT",
-  "repository": "cz848/dateio"
+  "repository": "cz848/dateio",
+  "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "mockdate": "^2.0.5",
+    "moment": "^2.24.0"
+  }
 }
