@@ -174,8 +174,7 @@ class DateIO {
 
   // 时间段
   a() {
-    const len = this.I18N.interval.length;
-    return this.I18N.interval[Math.floor(this.h() / 24 * len)];
+    return this.I18N.interval[Math.floor(this.h() / 24 * this.I18N.interval.length)];
   }
 
   // 时间段
@@ -189,7 +188,7 @@ class DateIO {
     return input.length ? this.init(input[0]) : this.valueOf();
   }
 
-  // Unix 时间戳 (秒) 
+  // Unix 时间戳 (秒)
   // 0...1542759768
   U(...input) {
     return input.length ? this.init(input[0] * 1000) : Math.round(this / 1000);
