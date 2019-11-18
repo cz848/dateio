@@ -5,7 +5,6 @@
  */
 
 // 匹配不同方法的正则
-const characterRegExp = /MS|ms|[YMDWHISUymdwhisu]/g;
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 
 // 转换为可识别的日期格式
@@ -29,25 +28,20 @@ class DateIO {
   }
 
   // 获取不同格式的日期，每个unit对应一种格式
-  get(unit = '') {
-    const formats = new Date(+this.$date - this.$date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
-    const [, Y, M, D, H, I, S, MS] = formats;
-    const units = {
-      Y,
-      M,
-      D,
-      H,
-      I,
-      S,
-      MS,
-      y: Number(Y.slice(-2)),
-      w: this.$date.getDay(),
-      W: '日一二三四五六'[this.$date.getDay()],
-      u: +this.$date,
-      U: Math.round(this.$date / 1000),
-    };
-    if (/^MS|[YMDWHISUywu]$/.test(unit)) return units[unit];
-    if (/ms|[mdhis]/.test(unit)) return Number(units[unit.toUpperCase()]);
+  get(unit) {
+    if (!unit) return;
+    const d = this.$date;
+    let res = new Date(+d - d.getTimezoneOffset() * 6e4).toISOString()
+      .replace(validDateRegExp, (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())]);
+    if (/^[WUywu]$/.test(unit)) res = {
+      y: Number(res.slice(-2)),
+      w: d.getDay(),
+      W: '日一二三四五六'[d.getDay()],
+      u: +d,
+      U: Math.round(d / 1000),
+    }[unit];
+    if (/ms|[mdhis]/.test(unit)) res = Number(res);
+    return res;
   }
 
   toString() {
@@ -60,7 +54,7 @@ class DateIO {
 
   // 利用格式化串格式化日期
   format(formats) {
-    return String(formats || 'Y-M-D H:I:S').replace(characterRegExp, unit => this.get(unit));
+    return String(formats || 'Y-M-D H:I:S').replace(/MS|ms|[YMDWHISUymdwhisu]/g, unit => this.get(unit));
   }
 }
 
