@@ -4,11 +4,9 @@
  * github: https://github.com/cz848/dateio
  */
 
-// 位数不够前补0，为了更好的兼容，用slice替代padStart
-const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
-
 // 匹配不同方法的正则
-const characterRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
+const characterRegExp = /MS|ms|[YMDWHISUymdwhisu]/g;
+const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 
 // 转换为可识别的日期格式
 const toDate = input => {
@@ -32,33 +30,24 @@ class DateIO {
 
   // 获取不同格式的日期，每个unit对应一种格式
   get(unit = '') {
+    const formats = new Date(+this.$date - this.$date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
+    const [, Y, M, D, H, I, S, MS] = formats;
     const units = {
-      y: 'getFullYear',
-      m: 'getMonth',
-      d: 'getDate',
-      w: 'getDay',
-      h: 'getHours',
-      i: 'getMinutes',
-      s: 'getSeconds',
-      ms: 'getMilliseconds',
-      u: 'valueOf',
+      Y,
+      M,
+      D,
+      H,
+      I,
+      S,
+      MS,
+      y: Number(Y.slice(-2)),
+      w: this.$date.getDay(),
+      W: '日一二三四五六'[this.$date.getDay()],
+      u: +this.$date,
+      U: Math.round(this.$date / 1000),
     };
-    let res;
-    // 同一个正则需重置计数
-    characterRegExp.lastIndex = 0;
-    if (characterRegExp.test(unit)) {
-      const api = units[unit.toLowerCase()];
-      res = this.$date[api]();
-      if (/[mMW]/.test(unit)) res += 1;
-    }
-    if (/[MDHIS]/.test(unit)) {
-      res = zeroFill(res, unit === 'MS' ? 3 : 2);
-    } else if (unit === 'y') {
-      res = res.toString().slice(-2);
-    } else if (unit === 'U') {
-      res = Math.round(res / 1000);
-    }
-    return res;
+    if (/^MS|[YMDWHISUywu]$/.test(unit)) return units[unit];
+    if (/ms|[mdhis]/.test(unit)) return Number(units[unit.toUpperCase()]);
   }
 
   toString() {
