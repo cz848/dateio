@@ -233,9 +233,9 @@ class DateIO {
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
   diff(input, unit, isFloat = false) {
-    const time = toDate(input);
-    let diff = this - time;
-    diff = diff / numberUnitMap[unit || 'ms'] || diff;
+    const that = toDate(input);
+    let diff = this - that;
+    diff /= numberUnitMap[unit || 'ms'] || 1;
 
     return isFloat ? diff : intPart(diff);
   }
@@ -250,7 +250,7 @@ class DateIO {
     const addUnit = pattern[2] || unit || 'ms';
     let number = Number(pattern[1]);
     // 年月整数部分单独处理
-    if (['m', 'y'].indexOf(addUnit) >= 0) {
+    if (/[ym]/.test(addUnit)) {
       const integer = intPart(number);
       number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
       this.set(addUnit, this[addUnit]() + integer);
@@ -283,7 +283,7 @@ class DateIO {
   }
 }
 
-const dateio = input => (isInstance(input) ? input.clone() : new DateIO(input));
+const dateio = input => new DateIO(input);
 
 dateio.prototype = DateIO.prototype;
 
