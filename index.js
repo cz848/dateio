@@ -35,15 +35,9 @@ const I18N = {
   interval: ['凌晨', '上午', '下午', '晚上'],
 };
 
-// 是否为 DateIO 的实例
-// eslint-disable-next-line no-use-before-define
-const isInstance = input => input instanceof DateIO;
-
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
-  if (isInstance(input)) return input.$date;
-  if (input instanceof Date) return input;
   // fix: ISOString
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
   // TODO: 与原生行为有出入
