@@ -194,13 +194,14 @@ dateio('2019-10-20')
 ```
 
 ### 加法 `.add(value: number, unit?: string)`
-对日期进行+-运算，默认精确到毫秒，可传小数（年和月的小数有一定误差）。
+对日期进行+-运算，默认精确到毫秒，可传小数（年和月的小数部分分别按365天和30天计算，有一定误差）。
 - input: `7d`, `-1m`, `10y`, `5.5h`等或数字。
 - unit: `y`, `m`, `d`, `w`, `h`, `i`, `s`, `ms`。
 
 ```javascript
 dateio().add(7, 'd');
 dateio().add('7d');
+dateio().add('7.5d');
 ```
 
 ### 减法 `.subtract(value: number, unit?: string)`
@@ -209,8 +210,10 @@ dateio().add('7d');
 ```javascript
 dateio().subtract(7, 'y');
 dateio().subtract('7y');
+dateio().subtract('7.5h');
 dateio().add(-7, 'd');
 dateio().add('-7d');
+dateio().add('-7.5h');
 ```
 
 ## 显示
