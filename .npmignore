@@ -1,3 +1,4 @@
+.babelrc
 coverage
 test
 jest.config.js
