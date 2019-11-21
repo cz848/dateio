@@ -62,7 +62,7 @@ class DateIO {
 
   $get(type) {
     const value = this.$date[`get${capitalize(type)}`]();
-    return value + (type === 'month');
+    return value + Number(type === 'month');
   }
 
   $set(type, ...input) {
@@ -245,9 +245,8 @@ class DateIO {
     let number = Number(pattern[1]);
     // 年月整数部分单独处理，小数部分暂时按365天和30天处理，有一定误差
     if (/[ym]/.test(addUnit)) {
-      const integer = intPart(number);
+      this.set(addUnit, this[addUnit]() + intPart(number));
       number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
-      this.set(addUnit, this[addUnit]() + integer);
     }
 
     return number ? this.init(number * unitStep[addUnit] + this.valueOf()) : this;
@@ -271,9 +270,7 @@ class DateIO {
 
   // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
   isSame(input, unit = 'u') {
-    const thisTime = this.get(unit);
-    const thatTime = new DateIO(input).get(unit);
-    return thisTime !== undefined && thatTime !== undefined && +thisTime === +thatTime;
+    return +this.get(unit) === +new DateIO(input).get(unit);
   }
 }
 
