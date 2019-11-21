@@ -17,9 +17,9 @@ const intPart = n => Number.parseInt(n, 10);
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^MS|ms|[YMDWHISAUymdwhisau]$/;
 const setUnitRegExp = /^ms|[Uymdhisu]$/;
-const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
+const addUnitRegExp = /^([+-]?\d+(?:\.\d+)?)(ms|[ymdwhis])?$/;
 // 每个时间单位对应的毫秒数
-const numberUnitMap = {
+const unitStep = {
   ms: 1,
   s: 1e3,
   i: 6e4,
@@ -229,7 +229,7 @@ class DateIO {
   diff(input, unit, isFloat = false) {
     const that = toDate(input);
     let diff = this - that;
-    diff /= numberUnitMap[unit || 'ms'] || 1;
+    diff /= unitStep[unit || 'ms'] || 1;
 
     return isFloat ? diff : intPart(diff);
   }
@@ -243,14 +243,14 @@ class DateIO {
 
     const addUnit = pattern[2] || unit || 'ms';
     let number = Number(pattern[1]);
-    // 年月整数部分单独处理
+    // 年月整数部分单独处理，小数部分暂时按365天和30天处理，有一定误差
     if (/[ym]/.test(addUnit)) {
       const integer = intPart(number);
       number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
       this.set(addUnit, this[addUnit]() + integer);
     }
 
-    return number ? this.init(number * numberUnitMap[addUnit] + this.valueOf()) : this;
+    return number ? this.init(number * unitStep[addUnit] + this.valueOf()) : this;
   }
 
   subtract(input, unit = 'ms') {
@@ -265,7 +265,7 @@ class DateIO {
 
   // 获取某月有多少天
   daysInMonth() {
-    const monthDays = [31, 28 + this.isLeapYear(), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const monthDays = [31, 28 + Number(this.isLeapYear()), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     return monthDays[this.m() - 1];
   }
 
