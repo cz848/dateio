@@ -1,10 +1,10 @@
 /**
  * 统一处理日期或格式化输出
  * Author: Tyler.Chao
- * github: https://github.com/cz848/dateio
+ * github: https://github.com/cz848/dateio#get
  */
 
-// 匹配不同方法的正则
+// 匹配出ISO格式的日期字符串
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 
 // 转换为可识别的日期格式
@@ -24,24 +24,24 @@ class DateIO {
 
   init(input) {
     this.$date = toDate(input);
-    return this;
   }
 
   // 获取不同格式的日期，每个unit对应一种格式
   get(unit) {
     if (!unit) return;
     const d = this.$date;
-    let res = new Date(+d - d.getTimezoneOffset() * 6e4).toISOString()
-      .replace(validDateRegExp, (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())]);
-    if (/^[WUywu]$/.test(unit)) res = {
-      y: Number(res.slice(-2)),
+    // 转换成中国时区并输出'2019-10-10T15:10:22:123Z'的形式，再解析出所需要的数值
+    let res;
+    if (/^[wu]$/i.test(unit)) res = {
       w: d.getDay(),
       W: '日一二三四五六'[d.getDay()],
       u: +d,
       U: Math.round(d / 1000),
     }[unit];
-    if (/ms|[mdhis]/.test(unit)) res = Number(res);
-    return res;
+    else res = new Date(+d - d.getTimezoneOffset() * 6e4).toISOString()
+      .replace(validDateRegExp, (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
+    if (/^(?:ms|[ymdhis])$/.test(unit)) res = Number(res);
+    return res || undefined;
   }
 
   toString() {
