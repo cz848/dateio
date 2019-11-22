@@ -15,8 +15,8 @@ const intPart = n => Number.parseInt(n, 10);
 
 // 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
-const getUnitRegExp = /^MS|ms|[YMDWHISAUymdwhisau]$/;
-const setUnitRegExp = /^ms|[Uymdhisu]$/;
+const getUnitRegExp = /^(?:MS|ms|[YMDWHISAUymdwhisau])$/;
+const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
 const addUnitRegExp = /^([+-]?\d+(?:\.\d+)?)(ms|[ymdwhis])?$/;
 // 每个时间单位对应的毫秒数
 const unitStep = {
