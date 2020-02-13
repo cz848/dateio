@@ -244,9 +244,9 @@ class DateIO {
     const addUnit = pattern[2] || unit || 'ms';
     let number = Number(pattern[1]);
     // 年月整数部分单独处理，小数部分暂时按365天和30天处理，有一定误差
-    if (/[ym]/.test(addUnit)) {
+    if (/^[ym]$/.test(addUnit)) {
       this.set(addUnit, this[addUnit]() + intPart(number));
-      number = Number(number.toString().replace(/^(-?)\d+(?=\.?)/g, '$10'));
+      number = Number(String(number).replace(/^(-?)\d+(?=\.?)/g, '$10'));
     }
 
     return number ? this.init(number * unitStep[addUnit] + this.valueOf()) : this;
