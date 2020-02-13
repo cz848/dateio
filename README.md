@@ -248,14 +248,14 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `U`        | 0-1542759768    | unix 时间戳(秒)     |
 
 ### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
-返回两个日期的差值，精确到毫秒(年和月分别按365天和30天计算)
+返回两个日期的差值，精确到毫秒
 
 ```javascript
 const date1 = dateio('2019-10-20');
 const date2 = dateio('2018-06-05');
 date1.diff(date2); // 43372800000
 date1.diff(date2, 'm'); // 16
-date1.diff(date2, 'm', true); // 16.733333333333334
+date1.diff(date2, 'm', true); // 16.483870967741936
 date1.diff(date2, 'd'); // 502
 ```
 

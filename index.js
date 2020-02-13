@@ -35,6 +35,15 @@ const I18N = {
   interval: ['凌晨', '上午', '下午', '晚上'],
 };
 
+// from moment.js in order to keep the same result
+const monthDiff = (a, b) => {
+  const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
+  const anchor = a.clone().add(wholeMonthDiff, 'm');
+  const comparison = b > anchor;
+  const anchor2 = a.clone().add(wholeMonthDiff + (comparison ? 1 : -1), 'm');
+  return -(wholeMonthDiff + (b - anchor) / Math.abs(anchor2 - anchor)) || 0;
+};
+
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
@@ -227,9 +236,16 @@ class DateIO {
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
   diff(input, unit, isFloat = false) {
-    const that = toDate(input);
+    const that = new DateIO(input);
+    const md = monthDiff(this, that);
     let diff = this - that;
-    diff /= unitStep[unit || 'ms'] || 1;
+    if (unit === 'm') {
+      diff = md;
+    } else if (unit === 'y') {
+      diff = md / 12;
+    } else {
+      diff /= unitStep[unit || 'ms'] || 1;
+    }
 
     return isFloat ? diff : intPart(diff);
   }
