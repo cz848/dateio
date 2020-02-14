@@ -232,6 +232,26 @@ class DateIO {
     return String(formats || 'Y-M-D H:I:S').replace(formatsRegExp, unit => this[unit]());
   }
 
+  // 开始于，默认ms
+  startOf(unit, isStartOf = true) {
+    let formats = 'y m d h i s';
+    formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
+    if (!formats) return this;
+    const dates = this.format(formats).split(' ');
+    const starts = [0, 1, 1, 0, 0, 0, 0];
+    const ends = [0, 12, 0, 23, 59, 59, 999];
+    const input = isStartOf ? starts : ends;
+    input.splice(0, dates.length, ...dates);
+    if (isStartOf || !/^[ym]$/.test(unit)) input[1] -= 1;
+    if (unit === 'w') input[2] -= this.w() - (isStartOf ? 0 : 6);
+    return this.init(input);
+  }
+
+  // 结束于，默认ms
+  endOf(unit) {
+    return this.startOf(unit, false);
+  }
+
   // 返回两个日期的差值，精确到毫秒
   // unit: ms: milliseconds(default)|s: seconds|i: minutes|h: hours|d: days|w: weeks|m: months|y: years
   // isFloat: 是否返回小数
@@ -286,7 +306,7 @@ class DateIO {
 
   // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
   isSame(input, unit = 'u') {
-    return +this.get(unit) === +new DateIO(input).get(unit);
+    return +this.clone().startOf(unit) === +new DateIO(input).startOf(unit);
   }
 }
 

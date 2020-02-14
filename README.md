@@ -216,6 +216,26 @@ dateio().add('-7d');
 dateio().add('-7.5h');
 ```
 
+### 开始于 `.startOf(unit?: string)`
+对日期进行从特定时段开始的操作。
+
+```javascript
+dateio().startOf('y'); // '2020-01-01 00:00:00'
+dateio().startOf('m'); // '2020-02-01 00:00:00'
+dateio().startOf('d'); // '2020-02-14 00:00:00'
+dateio().startOf('h'); // '2020-02-14 14:00:00'
+```
+
+### 结束于 `.endOf(unit?: string)`
+对日期进行结束于特定时段的操作。
+
+```javascript
+dateio().endOf('y'); // '2020-12-31 23:59:59'
+dateio().endOf('m'); // '2020-02-29 23:59:59'
+dateio().endOf('d'); // '2020-02-14 23:59:59'
+dateio().endOf('h'); // '2020-02-14 14:59:59'
+```
+
 ## 显示
 
 ### 格式化 `.format(formats?: string)`
@@ -291,7 +311,9 @@ dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
 ```javascript
 dateio().isSame(dateio()); // true
 dateio().isSame(new Date, 'y'); // true
+dateio('2020-1-4').isSame(dateio('2019-1-4'), 'm'); // false
 dateio().isSame(1571587652864, 'm');
+dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-5 10:04:21'), 'h') // false
 ```
 
 ### 是否为闰年 `.isLeapYear()`
