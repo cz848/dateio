@@ -7,7 +7,7 @@
 # 安装
 
 ```javascript
-npm install dateio --save
+npm install dateio
 ```
 
 # APIs

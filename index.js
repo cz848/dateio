@@ -177,7 +177,7 @@ class DateIO {
 
   // 时间段
   a() {
-    return this.I18N.interval[Math.floor(this.h() / 24 * this.I18N.interval.length)];
+    return this.I18N.interval[Math.floor((this.h() / 24) * this.I18N.interval.length)];
   }
 
   // 时间段
@@ -259,13 +259,9 @@ class DateIO {
     const that = new DateIO(input);
     const md = monthDiff(this, that);
     let diff = this - that;
-    if (unit === 'm') {
-      diff = md;
-    } else if (unit === 'y') {
-      diff = md / 12;
-    } else {
-      diff /= unitStep[unit || 'ms'] || 1;
-    }
+    if (unit === 'y') diff = md / 12;
+    else if (unit === 'm') diff = md;
+    else diff /= unitStep[unit] || 1;
 
     return isFloat ? diff : intPart(diff);
   }
@@ -273,11 +269,11 @@ class DateIO {
   // 对日期进行+-运算，默认精确到毫秒，可传小数
   // input: '7d', '-1m', '10y', '5.5h'等或数字。
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
-  add(input, unit) {
+  add(input, unit = 'ms') {
     const pattern = String(input).match(addUnitRegExp);
     if (!pattern) return this;
 
-    const addUnit = pattern[2] || unit || 'ms';
+    const addUnit = pattern[2] || unit;
     let number = Number(pattern[1]);
     // 年月整数部分单独处理，小数部分暂时按365天和30天处理，有一定误差
     if (/^[ym]$/.test(addUnit)) {
@@ -288,7 +284,7 @@ class DateIO {
     return number ? this.init(number * unitStep[addUnit] + this.valueOf()) : this;
   }
 
-  subtract(input, unit = 'ms') {
+  subtract(input, unit) {
     return this.add(`-${input}`, unit);
   }
 
