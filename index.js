@@ -75,6 +75,7 @@ class DateIO {
   }
 
   $set(type, ...input) {
+    // 处理原生月份的对应关系
     if (type === 'fullYear' && input.length > 1) input[1] -= 1;
     else if (type === 'month') input[0] -= 1;
     this.$date[`set${capitalize(type)}`](...input);
@@ -82,13 +83,13 @@ class DateIO {
   }
 
   // 年
-  // 100...2019
+  // 100...2020
   y(...input) {
     return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
   }
 
   // 年 (4位)
-  // 0100...2019
+  // 0100...2020
   Y() {
     return zeroFill(this.y(), 4);
   }
@@ -301,7 +302,7 @@ class DateIO {
   }
 
   // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
-  isSame(input, unit = 'u') {
+  isSame(input, unit) {
     return +this.clone().startOf(unit) === +new DateIO(input).startOf(unit);
   }
 }
