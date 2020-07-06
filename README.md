@@ -38,13 +38,13 @@ dateio('2019-10-20 15:20:45');
 dateio([2019, 10, 20, 15, 20, 45]);
 ```
 
-#### 传入原生JS Date对象
+#### 传入原生 JS Date 对象
 
 ```javascript
 dateio(new Date(2019, 10, 20));
 ```
 
-#### 传入Unix 偏移量(毫秒)
+#### 传入 Unix 偏移量(毫秒)
 
 ```javascript
 dateio(1568781876406);

@@ -39,15 +39,13 @@ const I18N = {
 const monthDiff = (a, b) => {
   const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
   const anchor = a.clone().add(wholeMonthDiff, 'm');
-  const comparison = b > anchor;
-  const anchor2 = a.clone().add(wholeMonthDiff + (comparison ? 1 : -1), 'm');
+  const anchor2 = a.clone().add(wholeMonthDiff + (b > anchor ? 1 : -1), 'm');
   return -(wholeMonthDiff + (b - anchor) / Math.abs(anchor2 - anchor)) || 0;
 };
 
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
-  // fix: ISOString
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
   // TODO: 与原生行为有出入
   if (Array.isArray(input) && input.length !== 1) return new Date(...input);
@@ -75,7 +73,7 @@ class DateIO {
   }
 
   $set(type, ...input) {
-    // 处理原生月份的对应关系
+    // 处理原生月份的偏移量
     if (type === 'fullYear' && input.length > 1) input[1] -= 1;
     else if (type === 'month') input[0] -= 1;
     this.$date[`set${capitalize(type)}`](...input);
@@ -239,6 +237,7 @@ class DateIO {
     formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
     if (!formats) return this;
     const dates = this.format(formats).split(' ');
+     // 分别对应年/月/日/时/分/秒/毫秒
     const starts = [0, 1, 1, 0, 0, 0, 0];
     const ends = [0, 12, 0, 23, 59, 59, 999];
     const input = isStartOf ? starts : ends;
