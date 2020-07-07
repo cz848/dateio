@@ -13,7 +13,12 @@ module.exports = {
     'airbnb-base',
     // promise 推荐规则
     'plugin:promise/recommended',
+    'plugin:jest/recommended',
   ],
+  plugins: ['jest'],
+  env: {
+    'jest/globals': true,
+  },
   settings: {},
   rules: {
     // 要求箭头函数的参数在需要时使用圆括号
