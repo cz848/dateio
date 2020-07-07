@@ -29,10 +29,17 @@ const unitStep = {
   m: 864e5 * 30, // ~
   y: 864e5 * 365, // ~
 };
-const I18N = {
+// 语言包
+let I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
   interval: ['凌晨', '上午', '下午', '晚上'],
+};
+
+// 设置语言包
+const locale = config => {
+  if (config instanceof Object && !Array.isArray(config)) I18N = { ...I18N, ...config };
+  return I18N;
 };
 
 // from moment.js in order to keep the same result
@@ -54,16 +61,12 @@ const toDate = input => {
 
 class DateIO {
   constructor(input) {
-    this.i18n().init(input);
+    this.I18N = locale();
+    this.init(input);
   }
 
   init(input) {
     this.$date = toDate(input);
-    return this;
-  }
-
-  i18n(config) {
-    this.I18N = { ...I18N, ...config };
     return this;
   }
 
@@ -309,5 +312,7 @@ class DateIO {
 const dateio = input => new DateIO(input);
 
 dateio.prototype = DateIO.prototype;
+
+dateio.locale = locale;
 
 export default dateio;

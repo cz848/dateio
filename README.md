@@ -350,11 +350,20 @@ dateio('2016').isLeapYear(); // true
 
 ## 国际化
 
-### 自定义语言
+### 全局自定义语言包
 
 ```javascript
-dateio().i18n({
+// 默认语言包
+dateio.locale({
+  // 时间段，可根据传入数组的长度均分一天中的时间
   interval: ['凌晨', '上午', '下午', '晚上'],
+  // 星期
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+});
+
+// 定义其它语言包
+dateio.locale({
+  interval: ['a.m.', 'p.m.'],
+  weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 });
 ```
