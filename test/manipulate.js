@@ -63,10 +63,10 @@ describe('Add Subtract', () => {
   test('Add Time with decimal', () => {
     const d = '2019-10-22 15:42:32:544';
     expect(dateio(d).add(0.4, 'd').valueOf()).toEqual(1571764712544);
-    expect(dateio(d).add(0.5, 'd').valueOf()).toEqual(1571773352544);
+    expect(dateio(d).add(.5, 'd').valueOf()).toEqual(1571773352544);
     expect(dateio(d).add(1.4, 'w').valueOf()).toEqual(1572576872544);
     expect(dateio(d).add(2.5, 'w').valueOf()).toEqual(1573242152544);
-    expect(dateio(d).add('0.45h').valueOf()).toEqual(1571731772544);
+    expect(dateio(d).add('.45h').valueOf()).toEqual(1571731772544);
     expect(dateio(d).add('100.45m').valueOf()).toEqual(1835984552544);
     expect(dateio(d).add('13.45y').valueOf()).toEqual(1996234952544);
   });

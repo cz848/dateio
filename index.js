@@ -17,7 +17,7 @@ const intPart = n => Number.parseInt(n, 10);
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:MS|ms|[YMDWHISAUymdwhisau])$/;
 const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
-const addUnitRegExp = /^([+-]?\d+(?:\.\d+)?)(ms|[ymdwhis])?$/;
+const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
 // 每个时间单位对应的毫秒数
 const unitStep = {
   ms: 1,
