@@ -28,10 +28,10 @@ describe('StartOf EndOf', () => {
   test('week', () => {
     const testDate = [undefined, '2019-02-10', '2019-02-11', '2019-02-12', '2019-02-13', '2019-02-14', '2019-02-15', '2019-02-16'];
     testDate.forEach(d => {
-      expect(dateio(d).startOf('w').w()).toBe(moment(d).startOf('week').day());
-      expect(dateio(d).endOf('w').w()).toBe(moment(d).endOf('week').day());
-      expect(dateio(d).startOf('w').d()).toBe(moment(d).startOf('week').date());
-      expect(dateio(d).endOf('w').d()).toBe(moment(d).endOf('week').date());
+      expect(dateio(d).startOf('w').w).toBe(moment(d).startOf('week').day());
+      expect(dateio(d).endOf('w').w).toBe(moment(d).endOf('week').day());
+      expect(dateio(d).startOf('w').d).toBe(moment(d).startOf('week').date());
+      expect(dateio(d).endOf('w').d).toBe(moment(d).endOf('week').date());
     });
   });
 });
@@ -87,9 +87,9 @@ describe('Add Subtract', () => {
   test('Subtract Time with decimal', () => {
     const d = '2019-11-12 15:42:32:544';
     expect(dateio(d).subtract(0.4, 'd').valueOf()).toEqual(1573509992544);
-    expect(dateio(d).subtract(1.5, 'w').valueOf()).toEqual(1572637352544);
+    expect(dateio(d).subtract('1.5w').valueOf()).toEqual(1572637352544);
     expect(dateio(d).subtract(12.5, 'h').valueOf()).toEqual(1573499552544);
-    expect(dateio(d).subtract(3.5, 'm').valueOf()).toEqual(1564299752544);
+    expect(dateio(d).subtract('3.5m').valueOf()).toEqual(1564299752544);
     expect(dateio(d).subtract(5.45, 'y').valueOf()).toEqual(1401586952544);
     expect(dateio(d).subtract('0.33333h').valueOf()).toEqual(1573543352556);
   });

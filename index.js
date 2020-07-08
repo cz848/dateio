@@ -4,34 +4,32 @@
  * github: https://github.com/cz848/dateio
  */
 
-// 位数不够前补0，为了更好的兼容，用slice替代padStart
-const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
-
 // 首字母大写
 const capitalize = str => str.replace(/^[a-z]/, a => a.toUpperCase());
 
 // 取整数部分
 const intPart = n => Number.parseInt(n, 10);
 
+// 判断是否为普通对象
+const isPlainObject = o => o instanceof Object && !(o instanceof Function || Array.isArray(o));
+
 // 匹配不同方法的正则
 const formatsRegExp = /Mo|mo|MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:Mo|mo|MS|ms|[YMDWHISAUymdwhisau])$/;
 const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
-const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
+const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 // 语言包
 let I18N = {
   months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
   monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-  // months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  // weekdays: ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'],
   // 默认四个时段，可根据需要增减
   interval: ['凌晨', '上午', '下午', '晚上'],
 };
 // 设置语言包
 const locale = config => {
-  if (config instanceof Object && !Array.isArray(config)) I18N = { ...I18N, ...config };
+  if (isPlainObject(config)) I18N = { ...I18N, ...config };
   return I18N;
 };
 // 每个时间单位对应的毫秒数
@@ -56,7 +54,7 @@ const unitMap = {
 };
 // function from moment.js in order to keep the same result
 const monthDiff = (a, b) => {
-  const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
+  const wholeMonthDiff = (b.y - a.y) * 12 + (b.m - a.m);
   const anchor = a.clone().add(wholeMonthDiff, 'm');
   const anchor2 = a.clone().add(wholeMonthDiff + (b > anchor ? 1 : -1), 'm');
   return -(wholeMonthDiff + (b - anchor) / Math.abs(anchor2 - anchor)) || 0;
@@ -95,12 +93,12 @@ class DateIO {
     // 01...12
     this.M = M;
     // 月
-    // 0...11
-    this.m = Number(M) - 1;
+    // 1...12
+    this.m = Number(M);
     // 月份
-    this.Mo = months[this.m];
+    this.Mo = months[this.m - 1];
     // 缩写月份
-    this.mo = monthsShort[this.m];
+    this.mo = monthsShort[this.m - 1];
     // 日 (前导0)
     // 01...31
     this.D = D;
@@ -158,9 +156,11 @@ class DateIO {
     if (!setUnitRegExp.test(unit)) return this;
     if (unit === 'u') return this.init(input[0]);
     if (unit === 'U') return this.init(input[0] * 1000);
+    if (unit === 'y' && input.length > 1) input[1] -= 1;
+    else if (unit === 'm') input[0] -= 1;
     const type = unitMap[unit];
     this.$date[`set${capitalize(type)}`](...input);
-    return this.init();
+    return this.init(this.$date);
   }
 
   toDate() {
@@ -200,7 +200,7 @@ class DateIO {
     const input = isStartOf ? starts : ends;
     input.splice(0, dates.length, ...dates);
     if (isStartOf || !/^[ym]$/.test(unit)) input[1] -= 1;
-    if (unit === 'w') input[2] -= this.w() - (isStartOf ? 0 : 6);
+    if (unit === 'w') input[2] -= this.get('w') - (isStartOf ? 0 : 6);
     return this.init(input);
   }
 
@@ -238,7 +238,7 @@ class DateIO {
       number = Number(String(number).replace(/^(-?)\d+(?=\.?)/g, '$10'));
     }
 
-    return number ? this.init(number * numberUnitMap[addUnit] + this.valueOf()) : this;
+    return number ? this.init(+this + number * unitStep[addUnit]) : this;
   }
 
   subtract(input, unit) {

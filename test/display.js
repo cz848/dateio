@@ -159,12 +159,12 @@ describe('Difference', () => {
 describe('Timestamp', () => {
   test('Unix Timestamp (milliseconds)', () => {
     expect(dateio().valueOf()).toBe(moment().valueOf());
-    expect(dateio().u()).toBe(+moment());
+    expect(dateio().u).toBe(+moment());
   });
 
   test('Unix Timestamp (seconds)', () => {
     const d = '2019-10-11T10:13:19.123Z';
-    expect(dateio(d).U()).toBe(moment(d).unix());
+    expect(dateio(d).U).toBe(moment(d).unix());
   });
 });
 

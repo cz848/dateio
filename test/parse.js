@@ -16,7 +16,7 @@ describe('Constructor', () => {
     expect(dateio().set('y', 2018).add('1m') instanceof dateio).toBeTruthy();
     expect(dateio().clone() instanceof dateio).toBeTruthy();
     expect(dateio().toDate() instanceof Date).toBeTruthy();
-    expect(dateio().y() instanceof dateio).toBeFalsy();
+    expect(dateio().y instanceof dateio).toBeFalsy();
     expect(dateio().format() instanceof dateio).toBeFalsy();
   });
 
@@ -112,23 +112,23 @@ describe('Constructor', () => {
   test('Unix Timestamp Number (milliseconds)', () => {
     const timestamp = 1523520536000;
     expect(dateio(timestamp).valueOf()).toBe(moment(timestamp).valueOf());
-    expect(dateio(timestamp).u()).toBe(moment(timestamp).valueOf());
+    expect(dateio(timestamp).u).toBe(moment(timestamp).valueOf());
   });
 
   test('Unix Timestamp Number (seconds)', () => {
     const timestamp1 = 1318781876;
     const timestamp2 = 1318781876.721;
-    expect(dateio().U(timestamp1).valueOf()).toBe(moment.unix(timestamp1).valueOf());
-    expect(dateio().U(timestamp2).valueOf()).toBe(moment.unix(timestamp2).valueOf());
+    expect(dateio().set('U', timestamp1).valueOf()).toBe(moment.unix(timestamp1).valueOf());
+    expect(dateio().set('U', timestamp2).valueOf()).toBe(moment.unix(timestamp2).valueOf());
   });
 });
 
 describe('Clone', () => {
   test('Clone not affect each other', () => {
     const base = dateio('2017/01/01');
-    const year = base.y();
+    const year = base.y;
     const another = base.clone().set('y', year + 1);
-    expect(another.U() - base.U()).toEqual(31536000);
+    expect(another.U - base.U).toEqual(31536000);
   });
 
   test('Clone with same value', () => {
