@@ -10,8 +10,6 @@ afterEach(() => {
   MockDate.reset();
 });
 
-// global.console.warn = () => {};
-
 test('Original methods', () => {
   expect(dateio().toString()).toBe(new Date().toString());
   expect(dateio().toLocaleString()).toBe(new Date().toLocaleString());
