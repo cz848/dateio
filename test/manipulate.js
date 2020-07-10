@@ -72,11 +72,13 @@ describe('Add Subtract', () => {
   });
 
   test('Rejects invalid values', () => {
-    expect(dateio().add('sdkf').toString().replace(/ \(.+\)$/, '')).toBe(moment().toString());
-    expect(dateio().add('10fx').toString().replace(/ \(.+\)$/, '')).toBe(moment().toString());
-    expect(dateio().add(3, 'dkf').toString().replace(/ \(.+\)$/, '')).toBe(moment().toString());
-    expect(dateio().add(NaN, 's').toString().replace(/ \(.+\)$/, '')).toBe(moment().toString());
-    expect(dateio().add(5000).valueOf()).toBe(moment().add(5000, 'ms').valueOf());
+    const d = dateio('2020-01-28 10:04:33.555');
+    const m = moment('2020-01-28 10:04:33.555');
+    expect(d.add('sdkf').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add('10fx').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add(3, 'dkf').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add(NaN, 's').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add(5000).valueOf()).toBe(m.add(5000, 'ms').valueOf());
   });
 
   test('Subtract Time days', () => {

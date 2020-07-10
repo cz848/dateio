@@ -284,7 +284,7 @@ class DateIO {
       number = Number(String(number).replace(/^(-?)\d+(?=\.?)/g, '$10'));
     }
 
-    return number ? this.init(number * unitStep[addUnit] + this.valueOf()) : this;
+    return number ? this.init(number * (unitStep[addUnit] || 0) + this.valueOf()) : this;
   }
 
   subtract(input, unit) {
