@@ -30,6 +30,8 @@ dateio();
 
 ```javascript
 dateio('2019-10-20 15:20:45');
+dateio('2019-10-20T15:20:45Z');
+dateio('2020-01-28 10:04:33.555');
 ```
 
 #### 传入日期数组
@@ -291,7 +293,7 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 
 ### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
 
-返回两个日期的差值，精确到毫秒
+返回两个日期的差值，精确到毫秒。支持所有可以被转化为日期的参数。
 
 ```javascript
 const date1 = dateio('2019-10-20');
@@ -330,7 +332,7 @@ dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
 
 ### 是否相同 `.isSame(compared: Date like | DateIO, unit?: string)`
 
-比较两个同格式的日期是否相同，默认精确到毫秒。
+比较两个同格式的日期是否相同，默认精确到毫秒。支持所有可以被转化为日期的参数。
 
 ```javascript
 dateio().isSame(dateio()); // true
