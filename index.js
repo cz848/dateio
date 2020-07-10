@@ -38,7 +38,7 @@ let I18N = {
 
 // 设置语言包
 const locale = config => {
-  if (config instanceof Object && !Array.isArray(config)) I18N = { ...I18N, ...config };
+  I18N = { ...I18N, ...config };
   return I18N;
 };
 
