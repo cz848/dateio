@@ -18,7 +18,7 @@ const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:MS|ms|[YMDWHISAUymdwhisau])$/;
 const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
 const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
-// 每个时间单位对应的毫秒数
+// 每个时间单位对应的毫秒数或月数
 const unitStep = {
   ms: 1,
   s: 1e3,
@@ -26,8 +26,8 @@ const unitStep = {
   h: 36e5,
   d: 864e5,
   w: 864e5 * 7,
-  m: 864e5 * 30, // ~
-  y: 864e5 * 365, // ~
+  m: 1,
+  y: 12,
 };
 // 语言包
 let I18N = {
@@ -262,8 +262,7 @@ class DateIO {
     const that = new DateIO(input);
     const md = monthDiff(this, that);
     let diff = this - that;
-    if (unit === 'y') diff = md / 12;
-    else if (unit === 'm') diff = md;
+    if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
     return isFloat ? diff : intPart(diff);
@@ -272,19 +271,15 @@ class DateIO {
   // 对日期进行+-运算，默认精确到毫秒，可传小数
   // input: '7d', '-1m', '10y', '5.5h'等或数字。
   // unit: 'y', 'm', 'd', 'w', 'h', 'i', 's', 'ms'。
-  add(input, unit = 'ms') {
+  add(input, unit) {
     const pattern = String(input).match(addUnitRegExp);
     if (!pattern) return this;
 
-    const addUnit = pattern[2] || unit;
-    let number = Number(pattern[1]);
-    // 年月整数部分单独处理，小数部分暂时按365天和30天处理，有一定误差
-    if (/^[ym]$/.test(addUnit)) {
-      this.set(addUnit, this[addUnit]() + intPart(number));
-      number = Number(String(number).replace(/^(-?)\d+(?=\.?)/g, '$10'));
-    }
-
-    return number ? this.init(number * (unitStep[addUnit] || 0) + this.valueOf()) : this;
+    const addUnit = pattern[2] || unit || 'ms';
+    const number = Number(pattern[1]);
+    // 年月转化为月，并四舍五入
+    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m() + number * unitStep[addUnit]);
+    return this.init(number * (unitStep[addUnit] || 0) + this.valueOf());
   }
 
   subtract(input, unit) {

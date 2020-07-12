@@ -10,6 +10,8 @@ afterEach(() => {
   MockDate.reset();
 });
 
+console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
+
 describe('StartOf EndOf', () => {
   test('with units', () => {
     const testArr = ['y', 'm', 'd', 'h', 'i', 's', 'ms', 'w'];
@@ -61,14 +63,15 @@ describe('Add Subtract', () => {
   });
 
   test('Add Time with decimal', () => {
-    const d = '2019-10-22 15:42:32:544';
-    expect(dateio(d).add(0.4, 'd').valueOf()).toEqual(1571764712544);
-    expect(dateio(d).add(.5, 'd').valueOf()).toEqual(1571773352544);
-    expect(dateio(d).add(1.4, 'w').valueOf()).toEqual(1572576872544);
-    expect(dateio(d).add(2.5, 'w').valueOf()).toEqual(1573242152544);
-    expect(dateio(d).add('.45h').valueOf()).toEqual(1571731772544);
-    expect(dateio(d).add('100.45m').valueOf()).toEqual(1835984552544);
-    expect(dateio(d).add('13.45y').valueOf()).toEqual(1996234952544);
+    const d = '2019-10-22 15:42:32.544';
+    expect(dateio(d).add(0.4, 'd')).toEqual(dateio(+new Date(d) + 864e5 * 0.4));
+    expect(dateio(d).add(.5, 'd')).toEqual(dateio(+new Date(d) + 864e5 * 0.5));
+    expect(dateio(d).add(1.4, 'w')).toEqual(dateio(+new Date(d) + 864e5 * 7 * 1.4));
+    expect(dateio(d).add(2.5, 'w')).toEqual(dateio(+new Date(d) + 864e5 * 7 * 2.5));
+    expect(dateio(d).add('.45h').valueOf()).toEqual(moment(d).add(.45, 'h').valueOf());
+    expect(dateio(d).add('100.45m').valueOf()).toEqual(moment(d).add(100.45, 'M').valueOf());
+    expect(dateio(d).add('13.5y').valueOf()).toEqual(moment(d).add(13.5, 'y').valueOf());
+    expect(dateio(d).add('-3.5i').valueOf()).toEqual(moment(d).add(-3.5, 'm').valueOf());
   });
 
   test('Rejects invalid values', () => {
@@ -78,6 +81,8 @@ describe('Add Subtract', () => {
     expect(d.add('10fx').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(3, 'dkf').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(NaN, 's').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add('', 'h').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add(0, 'm').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(5000).valueOf()).toBe(m.add(5000, 'ms').valueOf());
   });
 
@@ -88,11 +93,11 @@ describe('Add Subtract', () => {
 
   test('Subtract Time with decimal', () => {
     const d = '2019-11-12 15:42:32:544';
-    expect(dateio(d).subtract(0.4, 'd').valueOf()).toEqual(1573509992544);
-    expect(dateio(d).subtract(1.5, 'w').valueOf()).toEqual(1572637352544);
-    expect(dateio(d).subtract(12.5, 'h').valueOf()).toEqual(1573499552544);
-    expect(dateio(d).subtract(3.5, 'm').valueOf()).toEqual(1564299752544);
-    expect(dateio(d).subtract(5.45, 'y').valueOf()).toEqual(1401586952544);
-    expect(dateio(d).subtract('0.33333h').valueOf()).toEqual(1573543352556);
+    expect(dateio(d).subtract(0.4, 'd')).toEqual(dateio(+new Date(d) - 864e5 * 0.4));
+    expect(dateio(d).subtract(1.5, 'w')).toEqual(dateio(+new Date(d) - 864e5 * 7 * 1.5));
+    expect(dateio(d).subtract(12.5, 'h').valueOf()).toEqual(moment(d).subtract(12.5, 'h').valueOf());
+    expect(dateio(d).subtract(3.5, 'm').valueOf()).toEqual(moment(d).subtract(3.5, 'M').valueOf());
+    expect(dateio(d).subtract(5.45, 'y').valueOf()).toEqual(moment(d).subtract(5.45, 'y').valueOf());
+    expect(dateio(d).subtract('0.33333h').valueOf()).toEqual(moment(d).subtract(0.33333, 'h').valueOf());
   });
 });

@@ -10,6 +10,8 @@ afterEach(() => {
   MockDate.reset();
 });
 
+console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
+
 describe('Constructor', () => {
   test('instanceof', () => {
     expect(dateio() instanceof dateio).toBeTruthy();
@@ -26,7 +28,6 @@ describe('Constructor', () => {
   });
 
   test('moment-js like formatted dates', () => {
-    global.console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
     let d = '2013/01/08';
     const s = 'YYYY-MM-DD HH:mm:ss';
     expect(dateio(d).valueOf()).toBe(moment(d).valueOf());
