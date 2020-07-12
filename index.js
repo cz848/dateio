@@ -8,7 +8,7 @@
 const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
 // 首字母大写
-const capitalize = str => str.replace(/^[a-z]/, a => a.toUpperCase());
+const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
 
 // 取整数部分
 const intPart = n => Number.parseInt(n, 10);
@@ -59,6 +59,17 @@ const toDate = input => {
   return new Date(input);
 };
 
+// 内部调用的get/set方法
+const get = (that, type) => that.$date[`get${capitalize(type)}`]() + Number(type === 'month');
+const set = (that, type, ...input) => {
+  // 处理原生月份的偏移量
+  if (type === 'fullYear' && input.length > 1) input[1] -= 1;
+  else if (type === 'month') input[0] -= 1;
+  that.$date[`set${capitalize(type)}`](...input);
+  return that;
+}
+const gs = (that, type, ...input) => input.length ? set(that, type, ...input) : get(that, type);
+
 class DateIO {
   constructor(input) {
     this.I18N = locale();
@@ -70,23 +81,10 @@ class DateIO {
     return this;
   }
 
-  $get(type) {
-    const value = this.$date[`get${capitalize(type)}`]();
-    return value + Number(type === 'month');
-  }
-
-  $set(type, ...input) {
-    // 处理原生月份的偏移量
-    if (type === 'fullYear' && input.length > 1) input[1] -= 1;
-    else if (type === 'month') input[0] -= 1;
-    this.$date[`set${capitalize(type)}`](...input);
-    return this;
-  }
-
   // 年
   // 100...2020
   y(...input) {
-    return input.length ? this.$set('fullYear', ...input) : this.$get('fullYear');
+    return gs(this, 'fullYear', ...input);
   }
 
   // 年 (4位)
@@ -98,7 +96,7 @@ class DateIO {
   // 加偏移后的月
   // 1...12
   m(...input) {
-    return input.length ? this.$set('month', ...input) : this.$get('month');
+    return gs(this, 'month', ...input);
   }
 
   // 月 (前导0)
@@ -110,7 +108,7 @@ class DateIO {
   // 日
   // 1...31
   d(...input) {
-    return input.length ? this.$set('date', ...input) : this.$get('date');
+    return gs(this, 'date', ...input);
   }
 
   // 日 (前导0)
@@ -122,7 +120,7 @@ class DateIO {
   // 周几
   // 0...6
   w() {
-    return this.$get('day');
+    return gs(this, 'day');
   }
 
   // 周几
@@ -134,7 +132,7 @@ class DateIO {
   // 24小时制
   // 0...23
   h(...input) {
-    return input.length ? this.$set('hours', ...input) : this.$get('hours');
+    return gs(this, 'hours', ...input);
   }
 
   // 24小时制 (前导0)
@@ -146,7 +144,7 @@ class DateIO {
   // 分
   // 0...59
   i(...input) {
-    return input.length ? this.$set('minutes', ...input) : this.$get('minutes');
+    return gs(this, 'minutes', ...input);
   }
 
   // 分 (前导0)
@@ -158,7 +156,7 @@ class DateIO {
   // 秒
   // 0...59
   s(...input) {
-    return input.length ? this.$set('seconds', ...input) : this.$get('seconds');
+    return gs(this, 'seconds', ...input);
   }
 
   // 秒 (前导0)
@@ -170,7 +168,7 @@ class DateIO {
   // 毫秒数
   // 0...999
   ms(...input) {
-    return input.length ? this.$set('milliseconds', ...input) : this.$get('milliseconds');
+    return gs(this, 'milliseconds', ...input);
   }
 
   MS() {
