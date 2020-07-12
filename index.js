@@ -67,8 +67,8 @@ const set = (that, type, ...input) => {
   else if (type === 'month') input[0] -= 1;
   that.$date[`set${capitalize(type)}`](...input);
   return that;
-}
-const gs = (that, type, ...input) => input.length ? set(that, type, ...input) : get(that, type);
+};
+const gs = (that, type, ...input) => (input.length ? set(that, type, ...input) : get(that, type));
 
 class DateIO {
   constructor(input) {
@@ -238,7 +238,7 @@ class DateIO {
     formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
     if (!formats) return this;
     const dates = this.format(formats).split(' ');
-     // 分别对应年/月/日/时/分/秒/毫秒
+    // 分别对应年/月/日/时/分/秒/毫秒
     const starts = [0, 1, 1, 0, 0, 0, 0];
     const ends = [0, 12, 0, 23, 59, 59, 999];
     const input = isStartOf ? starts : ends;
@@ -305,7 +305,6 @@ class DateIO {
 const dateio = input => new DateIO(input);
 
 dateio.prototype = DateIO.prototype;
-
 dateio.locale = locale;
 
 export default dateio;

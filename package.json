@@ -7,6 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
+    "lint": "eslint index.js",
+    "lint:jest": "eslint test/",
     "test": "jest",
     "coverage": "open ./coverage/lcov-report/index.html"
   },
@@ -22,6 +24,11 @@
   "repository": "cz848/dateio",
   "devDependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-promise": "^4.2.1",
     "mockdate": "^2.0.5",
     "moment": "^2.24.0"
   }
