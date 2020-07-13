@@ -1,6 +1,6 @@
 /**
  * 统一处理日期或格式化输出
- * Author: tyler.chao
+ * Author: Tyler.Chao
  * github: https://github.com/cz848/dateio
  */
 
@@ -8,7 +8,7 @@
 const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
 // 首字母大写
-const capitalize = str => str.replace(/^[a-z]/, a => a.toUpperCase());
+const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
 
 // 取整数部分
 const intPart = n => Number.parseInt(n, 10);
@@ -17,24 +17,9 @@ const intPart = n => Number.parseInt(n, 10);
 const formatsRegExp = /Mo|mo|MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:Mo|mo|MS|ms|[YMDWHISAUymdwhisau])$/;
 const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
-const addUnitRegExp = /^([+-]?(?:\d\.)?\d+)(ms|[ymdwhis])?$/;
+const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
-// 语言包
-let I18N = {
-  months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
-  monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-  weekdays: ['日', '一', '二', '三', '四', '五', '六'],
-  // months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  // weekdays: ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'],
-  // 默认四个时段，可根据需要增减
-  interval: ['凌晨', '上午', '下午', '晚上'],
-};
-// 设置语言包
-const locale = config => {
-  if (config instanceof Object && !Array.isArray(config)) I18N = { ...I18N, ...config };
-  return I18N;
-};
-// 每个时间单位对应的毫秒数
+// 每个时间单位对应的毫秒数或月数
 const unitStep = {
   ms: 1,
   s: 1e3,
@@ -42,8 +27,8 @@ const unitStep = {
   h: 36e5,
   d: 864e5,
   w: 864e5 * 7,
-  m: 864e5 * 30, // ~
-  y: 864e5 * 365, // ~
+  m: 1,
+  y: 12,
 };
 const unitMap = {
   y: 'fullYear',
@@ -54,7 +39,24 @@ const unitMap = {
   s: 'seconds',
   ms: 'milliseconds',
 };
-// function from moment.js in order to keep the same result
+// 语言包
+let I18N = {
+  months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
+  monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+  weekdays: ['日', '一', '二', '三', '四', '五', '六'],
+  // months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  // weekdays: ['Sun', 'Mon', 'Tue', 'Wen', 'Thu', 'Fri', 'Sat'],
+  // 默认四个时段，可根据需要增减
+  interval: ['凌晨', '上午', '下午', '晚上'],
+};
+
+// 设置语言包
+const locale = config => {
+  I18N = { ...I18N, ...config };
+  return I18N;
+};
+
+// from moment.js in order to keep the same result
 const monthDiff = (a, b) => {
   const wholeMonthDiff = (b.y() - a.y()) * 12 + (b.m() - a.m());
   const anchor = a.clone().add(wholeMonthDiff, 'm');
@@ -66,7 +68,7 @@ const monthDiff = (a, b) => {
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO:与原生行为有出入
+  // TODO: 与原生行为有出入
   if (Array.isArray(input) && input.length !== 1) return new Date(...input);
   return new Date(input);
 };
@@ -216,8 +218,7 @@ class DateIO {
     const that = new DateIO(input);
     const md = monthDiff(this, that);
     let diff = this - that;
-    if (unit === 'y') diff = md / 12;
-    else if (unit === 'm') diff = md;
+    if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
     return isFloat ? diff : intPart(diff);
@@ -231,14 +232,10 @@ class DateIO {
     if (!pattern) return this;
 
     const addUnit = pattern[2] || unit || 'ms';
-    let number = Number(pattern[1]);
-    // 年月整数部分单独处理
-    if (/^[ym]$/.test(addUnit)) {
-      this.set(addUnit, this[addUnit] + intPart(number));
-      number = Number(String(number).replace(/^(-?)\d+(?=\.?)/g, '$10'));
-    }
-
-    return number ? this.init(number * numberUnitMap[addUnit] + this.valueOf()) : this;
+    const number = Number(pattern[1]);
+    // 年月转化为月，并四舍五入
+    if (/^[ym]$/.test(addUnit)) return this.set('m', this.get('m') + number * unitStep[addUnit]);
+    return this.init(number * (unitStep[addUnit] || 0) + this.valueOf());
   }
 
   subtract(input, unit) {
@@ -266,7 +263,6 @@ class DateIO {
 const dateio = input => new DateIO(input);
 
 dateio.prototype = DateIO.prototype;
-
 dateio.locale = locale;
 
 export default dateio;
