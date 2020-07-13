@@ -1,12 +1,14 @@
 {
   "name": "dateio",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A lightweight JavaScript date library for display and formatting dates.",
   "main": "index.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
+    "lint": "eslint index.js",
+    "lint:jest": "eslint test/",
     "test": "jest"
   },
   "keywords": [
@@ -21,6 +23,11 @@
   "repository": "cz848/dateio",
   "devDependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "eslint": "^7.4.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.18.0",
+    "eslint-plugin-promise": "^4.2.1",
     "mockdate": "^2.0.5",
     "moment": "^2.24.0"
   }

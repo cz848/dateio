@@ -135,7 +135,7 @@ class DateIO {
     // 000...999
     this.ms = Number(MS);
     // 时间段
-    this.a = interval[Math.floor(this.h / 24 * interval.length)];
+    this.a = interval[Math.floor((this.h / 24) * interval.length)];
     // 时间段
     this.A = this.a.toUpperCase();
     // 毫秒时间戳 (unix格式)
