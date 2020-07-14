@@ -20,9 +20,9 @@ class DateIO {
 
   // 获取不同格式的日期，每个unit对应一种格式
   get(unit) {
-    if (!unit) return;
+    if (!unit) return undefined;
     const d = this.$date;
-    let res;
+    let res = '';
     if (/^[wu]$/i.test(unit)) {
       res = {
         w: d.getDay(),
@@ -37,7 +37,12 @@ class DateIO {
           (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
     }
     if (/^(?:ms|[ymdhis])$/.test(unit)) res = Number(res);
-    return res || undefined;
+    return String(res) ? res : undefined;
+  }
+
+  // 利用格式化串格式化日期
+  format(formats) {
+    return String(formats || 'Y-M-D H:I:S').replace(/MS|ms|[YMDWHISUymdwhisu]/g, unit => this.get(unit));
   }
 
   toString() {
@@ -46,11 +51,6 @@ class DateIO {
 
   valueOf() {
     return this.$date.valueOf();
-  }
-
-  // 利用格式化串格式化日期
-  format(formats) {
-    return String(formats || 'Y-M-D H:I:S').replace(/MS|ms|[YMDWHISUymdwhisu]/g, unit => this.get(unit));
   }
 }
 
