@@ -62,6 +62,8 @@ const toDate = input => {
 // 内部调用的get/set方法
 const get = (that, type) => that.$date[`get${capitalize(type)}`]() + Number(type === 'month');
 const set = (that, type, ...input) => {
+  // 参数为非数字直接返回
+  if (input.some(n => isNaN(n - intPart(n)))) return that;
   // 处理原生月份的偏移量
   if (type === 'fullYear' && input.length > 1) input[1] -= 1;
   else if (type === 'month') input[0] -= 1;

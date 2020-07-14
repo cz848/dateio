@@ -76,7 +76,7 @@ dateio().Y(); // 2019
 dateio().y(); // 2019
 dateio('100').Y(); // 0100
 dateio('100').y(); // 100
-dateio().y(2000); // 被改变日期后的DateIO对象
+dateio().y(2000); // 被改变年份后的DateIO对象
 dateio().y(2000, 11, 15); // 被改变日期后的DateIO对象
 ```
 
@@ -164,7 +164,7 @@ dateio().a(); // 晚上
 
 ### Unix 偏移量(毫秒) `.valueOf()` 或 `.u(input?: number)`
 
-取得/设置时间的Unix毫秒时间戳。
+取得/设置时间的 Unix 偏移量(毫秒)。
 
 ```javascript
 dateio().valueOf(); // 1571553140345
@@ -189,16 +189,19 @@ dateio().U(1571553140);
 ```javascript
 dateio().get('m');
 dateio().get('h');
+dateio().get('y');
+dateio().get('Y');
 ```
 
 ### 赋值 `.set(unit: string, value: number)`
 
-返回被赋值后的`DateIO`对象。
+返回被改变日期后的`DateIO`对象。
 
 ```javascript
 dateio().set('d', 1);
 dateio().set('m', 3);
 dateio().set('s', 30);
+dateio().set('y', 2015, 4, 3);
 ```
 
 ## 操作
@@ -276,7 +279,8 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 
 | 格式化字串   | 输出             | 描述               |
 | ---------  | --------------- | -------------------|
-| `Y` 或 `y` | 2018            | 年份                |
+| `Y`　　　　 | 2018            | 年份，四位，字符串    |
+| `y`　　　　 | 2018            | 年份                |
 | `m`        | 1-12            | 月份                |
 | `M`        | 01-12           | 月份，带前导0，字符串  |
 | `d`        | 1-31            | 日                  |
