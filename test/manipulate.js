@@ -69,9 +69,15 @@ describe('Add Subtract', () => {
     expect(dateio(d).add(1.4, 'w')).toEqual(dateio(+new Date(d) + 864e5 * 7 * 1.4));
     expect(dateio(d).add(2.5, 'w')).toEqual(dateio(+new Date(d) + 864e5 * 7 * 2.5));
     expect(dateio(d).add('.45h').valueOf()).toEqual(moment(d).add(0.45, 'h').valueOf());
-    expect(dateio(d).add('100.45m').valueOf()).toEqual(moment(d).add(100.45, 'M').valueOf());
-    expect(dateio(d).add('13.5y').valueOf()).toEqual(moment(d).add(13.5, 'y').valueOf());
     expect(dateio(d).add('-3.5i').valueOf()).toEqual(moment(d).add(-3.5, 'm').valueOf());
+
+    expect(dateio(d).add('100.45m').valueOf()).toEqual(moment(d).add(100.45, 'M').valueOf());
+    expect(dateio(d).add('100.5m').valueOf()).toEqual(moment(d).add(100.5, 'M').valueOf());
+    expect(dateio(d).add('13.3y').valueOf()).toEqual(moment(d).add(13.3, 'y').valueOf());
+    expect(dateio(d).add('-13.4y').valueOf()).toEqual(moment(d).add(-13.4, 'y').valueOf());
+    expect(dateio(d).add('-13.7y').valueOf()).toEqual(moment(d).add(-13.7, 'y').valueOf());
+    expect(dateio(d).add('-13.49m').valueOf()).toEqual(moment(d).add(-13.49, 'M').valueOf());
+    expect(dateio(d).add('-13.5m').valueOf()).toEqual(moment(d).add(-13.5, 'M').valueOf());
   });
 
   test('Rejects invalid values', () => {
@@ -81,6 +87,7 @@ describe('Add Subtract', () => {
     expect(d.add('10fx').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(3, 'dkf').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(NaN, 's').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
+    expect(d.add(null, 's').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add('', 'h').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(0, 'm').toString().replace(/ \(.+\)$/, '')).toBe(m.toString());
     expect(d.add(5000).valueOf()).toBe(m.add(5000, 'ms').valueOf());
@@ -96,8 +103,14 @@ describe('Add Subtract', () => {
     expect(dateio(d).subtract(0.4, 'd')).toEqual(dateio(+new Date(d) - 864e5 * 0.4));
     expect(dateio(d).subtract(1.5, 'w')).toEqual(dateio(+new Date(d) - 864e5 * 7 * 1.5));
     expect(dateio(d).subtract(12.5, 'h').valueOf()).toEqual(moment(d).subtract(12.5, 'h').valueOf());
-    expect(dateio(d).subtract(3.5, 'm').valueOf()).toEqual(moment(d).subtract(3.5, 'M').valueOf());
-    expect(dateio(d).subtract(5.45, 'y').valueOf()).toEqual(moment(d).subtract(5.45, 'y').valueOf());
     expect(dateio(d).subtract('0.33333h').valueOf()).toEqual(moment(d).subtract(0.33333, 'h').valueOf());
+
+    expect(dateio(d).subtract(3.4, 'm').valueOf()).toEqual(moment(d).subtract(3.4, 'M').valueOf());
+    expect(dateio(d).subtract(3.5, 'm').valueOf()).toEqual(moment(d).subtract(3.5, 'M').valueOf());
+    expect(dateio(d).subtract(5.3, 'y').valueOf()).toEqual(moment(d).subtract(5.3, 'y').valueOf());
+    expect(dateio(d).subtract('13.4y').valueOf()).toEqual(moment(d).subtract(13.4, 'y').valueOf());
+    expect(dateio(d).subtract('13.7y').valueOf()).toEqual(moment(d).subtract(13.7, 'y').valueOf());
+    expect(dateio(d).subtract('13.49m').valueOf()).toEqual(moment(d).subtract(13.49, 'M').valueOf());
+    expect(dateio(d).subtract('13.5m').valueOf()).toEqual(moment(d).subtract(13.5, 'M').valueOf());
   });
 });
