@@ -10,8 +10,8 @@ const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || 
 // 首字母大写
 const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
 
-// 取整数部分
-const intPart = n => Number.parseInt(n, 10);
+// 有非数值型参数
+const isDefined = args => !args.some(n => [null, undefined].includes(n));
 
 // 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
@@ -62,15 +62,15 @@ const toDate = input => {
 // 内部调用的get/set方法
 const get = (that, type) => that.$date[`get${capitalize(type)}`]() + Number(type === 'month');
 const set = (that, type, ...input) => {
-  // 参数为非数字直接返回
-  if (input.some(n => isNaN(n - intPart(n)))) return that;
+  // 输入为非数字直接返回此对象
+  if (input.some(isNaN)) return that;
   // 处理原生月份的偏移量
   if (type === 'fullYear' && input.length > 1) input[1] -= 1;
   else if (type === 'month') input[0] -= 1;
   that.$date[`set${capitalize(type)}`](...input);
   return that;
 };
-const gs = (that, type, ...input) => (input.length ? set(that, type, ...input) : get(that, type));
+const gs = (that, type, ...input) => (input.length && isDefined(input) ? set(that, type, ...input) : get(that, type));
 
 class DateIO {
   constructor(input) {
@@ -265,7 +265,7 @@ class DateIO {
     if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
-    return isFloat ? diff : intPart(diff);
+    return isFloat ? diff : Math.trunc(diff);
   }
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
@@ -275,11 +275,10 @@ class DateIO {
     const pattern = String(input).match(addUnitRegExp);
     if (!pattern) return this;
 
-    const addUnit = pattern[2] || unit || 'ms';
-    const number = Number(pattern[1]);
+    const [, addend, addUnit = unit || 'ms'] = pattern;
     // 年月转化为月，并四舍五入
-    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m() + number * unitStep[addUnit]);
-    return this.init(number * (unitStep[addUnit] || 0) + this.valueOf());
+    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m() + Number((addend * unitStep[addUnit]).toFixed(0)));
+    return this.init(addend * (unitStep[addUnit] || 0) + this.valueOf());
   }
 
   subtract(input, unit) {

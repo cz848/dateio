@@ -90,6 +90,7 @@ test('Get unknown things', () => {
   expect(dateio().get(false)).toBeUndefined();
   expect(dateio().get(NaN)).toBeUndefined();
   expect(dateio().get()).toBeUndefined();
+  expect(dateio().get(0)).toBeUndefined();
 });
 
 test('Set Year', () => {
@@ -162,12 +163,22 @@ test('Set unknown things', () => {
   expect(dateio().set(undefined).valueOf()).toBe(moment().set(undefined).valueOf());
   expect(dateio().set(false).valueOf()).toBe(moment().set(false).valueOf());
   expect(dateio().set(NaN).valueOf()).toBe(moment().set(NaN).valueOf());
-  expect(dateio().set('D', 1).valueOf()).toBe(moment().set('', 1).valueOf());
-  expect(dateio().set('d', null).valueOf()).toBe(moment().set().valueOf());
-  expect(dateio().set('d', undefined).valueOf()).toBe(moment().set().valueOf());
-  expect(dateio().set('d', false).valueOf()).toBe(moment().set().valueOf());
-  expect(dateio().set('d', NaN).valueOf()).toBe(moment().set().valueOf());
-  expect(dateio().set('d', 'unknown').valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set('D', 1).valueOf()).toBe(moment().set('x', 1).valueOf());
+  expect(dateio().set('d', null).valueOf()).toBe(moment().set('D', null).valueOf());
+  expect(dateio().set('d', undefined).valueOf()).toBe(moment().set('D', undefined).valueOf());
+  expect(dateio().set('d', false).valueOf()).toBe(moment().set('D', false).valueOf());
+  expect(dateio().set('d', NaN).valueOf()).toBe(moment().set('D', NaN).valueOf());
+  expect(dateio().set('d', '').valueOf()).toBe(moment().set('D', '').valueOf());
+  expect(dateio().set('d', 'unknown').valueOf()).toBe(moment().set('D', 'unknown').valueOf());
+  expect(dateio().set('d', '0').valueOf()).toBe(moment().set('D', '0').valueOf());
+  expect(dateio().set('d', 0).valueOf()).toBe(moment().set('D', 0).valueOf());
+
+  expect(dateio().y('').valueOf()).toBe(moment().year('').valueOf());
+  expect(dateio().y('unknown').valueOf()).toBe(moment().year('unknown').valueOf());
+  expect(dateio().y(null).valueOf()).toBe(moment().year(null).valueOf());
+  expect(dateio().y(undefined).valueOf()).toBe(moment().year(undefined).valueOf());
+  expect(dateio().y(false).valueOf()).toBe(moment().year(false).valueOf());
+  expect(dateio().y(NaN).valueOf()).toBe(moment().year(NaN).valueOf());
 });
 
 test('Immutable Set', () => {
