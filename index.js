@@ -21,18 +21,18 @@ class DateIO {
   // 获取不同格式的日期，每个unit对应一种格式
   get(unit) {
     if (!unit) return undefined;
-    const d = this.$date;
+    const date = this.$date;
     let res;
     if (/^[wu]$/i.test(unit)) {
       res = {
-        w: d.getDay(),
-        W: '日一二三四五六'[d.getDay()],
-        u: +d,
-        U: Math.round(d / 1000),
+        w: date.getDay(),
+        W: '日一二三四五六'[date.getDay()],
+        u: +date,
+        U: Math.round(date / 1000),
       }[unit];
     } else {
       // 转换成中国时区并输出'2019-10-10T15:10:22:123Z'的形式，再解析出所需要的数值
-      res = new Date(+d - d.getTimezoneOffset() * 6e4).toISOString()
+      res = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString()
         .replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i,
           (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
     }
