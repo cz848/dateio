@@ -22,7 +22,7 @@ class DateIO {
   get(unit) {
     if (!unit) return undefined;
     const d = this.$date;
-    let res = '';
+    let res;
     if (/^[wu]$/i.test(unit)) {
       res = {
         w: d.getDay(),
@@ -37,7 +37,7 @@ class DateIO {
           (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
     }
     if (/^(?:ms|[ymdhis])$/.test(unit)) res = Number(res);
-    return String(res) ? res : undefined;
+    return res || res === 0 ? res : undefined;
   }
 
   // 利用格式化串格式化日期
