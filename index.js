@@ -75,12 +75,12 @@ class DateIO {
   }
 
   init(input) {
-    const d = toDate(input);
-    this.$date = d;
-    if (Number.isNaN(+d)) return this;
+    const date = toDate(input);
+    this.$date = date;
+    if (Number.isNaN(+date)) return this;
 
     const { months, monthsShort, weekdays, interval } = this.I18N;
-    const formats = new Date(+d - d.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
+    const formats = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
     const [, Y, M, D, H, I, S, MS] = formats;
     // 年 (4位)
     // 1970...2019
@@ -106,7 +106,7 @@ class DateIO {
     this.d = Number(D);
     // 周几
     // 0...6
-    this.w = d.getDay();
+    this.w = date.getDay();
     // 周几
     // 本地化后的星期x
     this.W = weekdays[this.w];
@@ -140,7 +140,7 @@ class DateIO {
     this.A = this.a.toUpperCase();
     // 毫秒时间戳 (unix格式)
     // 0...1571136267050
-    this.u = d.valueOf();
+    this.u = date.valueOf();
     // 秒时间戳 (unix格式)
     // 0...1542759768
     this.U = Math.round(this.u / 1000);
@@ -152,9 +152,11 @@ class DateIO {
   }
 
   set(unit = '', ...input) {
-    if (!setUnitRegExp.test(unit)) return this;
+    // 遇到非法单位或值直接返回此对象
+    if (!setUnitRegExp.test(unit) || input.some(n => isNaN(n - intPart(n)))) return this;
     if (unit === 'u') return this.init(input[0]);
     if (unit === 'U') return this.init(input[0] * 1000);
+    // 处理月份，设置的时候需要-1
     if (unit === 'y' && input.length > 1) input[1] -= 1;
     else if (unit === 'm') input[0] -= 1;
     const type = unitMap[unit];

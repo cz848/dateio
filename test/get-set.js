@@ -85,6 +85,10 @@ test('Get Unix timestamp', () => {
 test('Get unknown things', () => {
   expect(dateio().get('Unknown String')).toBeUndefined();
   expect(dateio().get('')).toBeUndefined();
+  expect(dateio().get(undefined)).toBeUndefined();
+  expect(dateio().get(null)).toBeUndefined();
+  expect(dateio().get(false)).toBeUndefined();
+  expect(dateio().get(NaN)).toBeUndefined();
   expect(dateio().get()).toBeUndefined();
 });
 
@@ -153,8 +157,17 @@ test('Set Month and Year in last day of month', () => {
 test('Set unknown things', () => {
   expect(dateio().set('Unknown String', 1).valueOf()).toBe(moment().set('Unknown String', 1).valueOf());
   expect(dateio().set('', 1).valueOf()).toBe(moment().set('', 1).valueOf());
-  expect(dateio().set('D', 1).valueOf()).toBe(moment().set('', 1).valueOf());
   expect(dateio().set().valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set(null).valueOf()).toBe(moment().set(null).valueOf());
+  expect(dateio().set(undefined).valueOf()).toBe(moment().set(undefined).valueOf());
+  expect(dateio().set(false).valueOf()).toBe(moment().set(false).valueOf());
+  expect(dateio().set(NaN).valueOf()).toBe(moment().set(NaN).valueOf());
+  expect(dateio().set('D', 1).valueOf()).toBe(moment().set('', 1).valueOf());
+  expect(dateio().set('d', null).valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set('d', undefined).valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set('d', false).valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set('d', NaN).valueOf()).toBe(moment().set().valueOf());
+  expect(dateio().set('d', 'unknown').valueOf()).toBe(moment().set().valueOf());
 });
 
 test('Immutable Set', () => {
