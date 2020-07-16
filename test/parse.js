@@ -93,13 +93,17 @@ describe('Constructor', () => {
     expect(d.diff(a, 'm')).toEqual(1);
   });
 
-  test('rejects invalid values', () => {
-    expect(dateio({}).toString()).toBe(new Date('').toString());
+  test('Other', () => {
     expect(dateio(() => '2018-01-01').$date instanceof Date).toBe(true);
-    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(1527832364000); // Arrays with time part
+    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 5, 1, 13, 52, 44]));
+    expect(+dateio([2018])).toBe(+moment([2018]));
+    expect(+dateio(2018)).toBe(+moment(2018));
+    expect(+dateio([2018, 2])).toBe(+moment([2018, 2]));
+    expect(+dateio(2018, 2, 1)).toBe(+moment(2018));
   });
 
-  test('String Other, Null, NaN and undefined', () => {
+  test('Invalid values', () => {
+    expect(dateio({}).toString()).toBe(new Date('').toString());
     expect(dateio('otherString').toString().toLowerCase()).toBe(moment('otherString').toString().toLowerCase());
     expect(dateio(null).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment().toString().toLowerCase());
     expect(dateio(undefined).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment(undefined).toString().toLowerCase());

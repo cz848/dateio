@@ -54,8 +54,8 @@ const monthDiff = (a, b) => {
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO: 与原生行为有出入
-  if (Array.isArray(input) && input.length !== 1) return new Date(...input);
+  // TODO: 与原生Date行为有出入
+  if (Array.isArray(input)) return new Date(...input.concat(0).splice(0, Math.max(2, input.length)));
   return new Date(input);
 };
 
