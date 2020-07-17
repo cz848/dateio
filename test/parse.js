@@ -95,10 +95,10 @@ describe('Constructor', () => {
 
   test('Other', () => {
     expect(dateio(() => '2018-01-01').$date instanceof Date).toBe(true);
-    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 5, 1, 13, 52, 44]));
+    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 4, 1, 13, 52, 44]));
     expect(+dateio([2018])).toBe(+moment([2018]));
     expect(+dateio(2018)).toBe(+moment(2018));
-    expect(+dateio([2018, 2])).toBe(+moment([2018, 2]));
+    expect(+dateio([2018, 2])).toBe(+moment([2018, 1]));
     expect(+dateio(2018, 2, 1)).toBe(+moment(2018));
   });
 

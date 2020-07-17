@@ -54,8 +54,7 @@ const monthDiff = (a, b) => {
 const toDate = input => {
   if (!(input || input === 0)) return new Date();
   if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO: 与原生Date行为有出入
-  if (Array.isArray(input)) return new Date(...input.concat(0).splice(0, Math.max(2, input.length)));
+  if (Array.isArray(input)) return new Date(new Date(input.splice(0, 3)).setHours(...(input.length ? input : [0])));
   return new Date(input);
 };
 
@@ -240,14 +239,12 @@ class DateIO {
     formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
     if (!formats) return this;
     const dates = this.format(formats).split(' ');
-    // 分别对应年/月/日/时/分/秒/毫秒
-    const starts = [0, 1, 1, 0, 0, 0, 0];
-    const ends = [0, 12, 0, 23, 59, 59, 999];
-    const input = isStartOf ? starts : ends;
-    input.splice(0, dates.length, ...dates);
-    if (isStartOf || !/^[ym]$/.test(unit)) input[1] -= 1;
-    if (unit === 'w') input[2] -= this.w() - (isStartOf ? 0 : 6);
-    return this.init(input);
+    if (unit === 'w') dates[2] -= this.w() - (isStartOf ? 0 : 6);
+    if (!isStartOf && unit === 'm') dates[2] = this.daysInMonth();
+    let input = new DateIO('0');
+    input = isStartOf ? input : input.ms(-1);
+    input.y(...dates);
+    return dates.length > 3 ? input.h(...dates.splice(3, dates.length)): input;
   }
 
   // 结束于，默认ms

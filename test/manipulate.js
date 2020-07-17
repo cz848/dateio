@@ -14,11 +14,22 @@ console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
 
 describe('StartOf EndOf', () => {
   test('with units', () => {
-    const testArr = ['y', 'm', 'd', 'h', 'i', 's', 'ms', 'w'];
-    const testArr2 = ['year', 'month', 'day', 'hour', 'minute', 'second', 'millisecond', 'week'];
-    testArr.forEach((d, i) => {
-      expect(dateio().startOf(d).valueOf()).toBe(moment().startOf(testArr2[i]).valueOf());
-      expect(dateio().endOf(d).valueOf()).toBe(moment().endOf(testArr2[i]).valueOf());
+    const d = '2018-2-3 11:23:45';
+    const units = {
+      y: 'y',
+      m: 'M',
+      d: 'd',
+      h: 'h',
+      i: 'm',
+      s: 's',
+      ms: 'ms',
+      w: 'w',
+    };
+    Object.entries(units).forEach(([k, v]) => {
+      expect(dateio().startOf(k).valueOf()).toBe(moment().startOf(v).valueOf());
+      expect(dateio().endOf(k).valueOf()).toBe(moment().endOf(v).valueOf());
+      expect(dateio(d).startOf(k).valueOf()).toBe(moment(d).startOf(v).valueOf());
+      expect(dateio(d).endOf(k).valueOf()).toBe(moment(d).endOf(v).valueOf());
     });
   });
 
