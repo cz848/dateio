@@ -19,7 +19,7 @@ const allDefined = args => args.length && args.every(isDefined);
 // 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:MS|ms|[YMDWHISAUymdwhisau])$/;
-const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
+const setUnitRegExp = /^(?:ms|[Uymdwhisu])$/;
 const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
 // 每个时间单位对应的毫秒数或月数
 const unitStep = {
@@ -70,7 +70,8 @@ const set = (that, type, ...input) => {
   // 处理原生月份的偏移量
   if (type === 'fullYear' && input.length > 1) input[1] -= 1;
   else if (type === 'month') input[0] -= 1;
-  that.$date[`set${capitalize(type)}`](...input);
+  if (type === 'day') that.add(input[0] - that.w(), 'd');
+  else that.$date[`set${capitalize(type)}`](...input);
   return that;
 };
 const gs = (that, type, ...input) => (allDefined(input) ? set(that, type, ...input) : get(that, type));
@@ -124,8 +125,8 @@ class DateIO {
 
   // 周几
   // 0...6
-  w() {
-    return get(this, 'day');
+  w(input) {
+    return gs(this, 'day', input);
   }
 
   // 周几
@@ -193,7 +194,7 @@ class DateIO {
   // unix 偏移量 (毫秒)
   // 0...1571136267050
   u(input) {
-    return isDefined(input) ? this.init(input) : this.valueOf();
+    return isDefined(input) ? this.init(input) : +this;
   }
 
   // Unix 时间戳 (秒)
@@ -229,7 +230,7 @@ class DateIO {
   }
 
   clone() {
-    return new DateIO(+this.$date);
+    return new DateIO(+this);
   }
 
   // 利用格式化串格式化日期
@@ -242,8 +243,8 @@ class DateIO {
     if (!/^[ymdwhis]$/.test(unit)) return this;
     let u = unit;
     if (u === 'w') {
+      this.w(isEndOf ? 6 : 0);
       u = 'd';
-      this.add((isEndOf ? 6 : 0) - this.w(), u);
     }
     const formats = 'y m d h i s ms'.split(new RegExp(`(?<=${u}) `));
     let dates = this.format(formats[0]).split(' ');

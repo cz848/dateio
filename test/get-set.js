@@ -113,6 +113,14 @@ test('Set Day', () => {
   expect(dateio().d(1).valueOf()).toBe(moment().date(1).valueOf());
 });
 
+test('Set Week', () => {
+  expect(dateio().set('w', 3).valueOf()).toBe(moment().set('day', 3).valueOf());
+  expect(dateio().w(0).valueOf()).toBe(moment().day(0).valueOf());
+  expect(dateio().w(6).valueOf()).toBe(moment().day(6).valueOf());
+  expect(dateio().w(-7).valueOf()).toBe(moment().day(-7).valueOf());
+  expect(dateio().w(7).valueOf()).toBe(moment().day(7).valueOf());
+});
+
 test('Set Hour', () => {
   expect(dateio().set('h', 6).valueOf()).toBe(moment().set('hour', 6).valueOf());
   expect(dateio().h(0).valueOf()).toBe(moment().hour(0).valueOf());
