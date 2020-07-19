@@ -63,7 +63,7 @@ const toDate = input => {
 
 // 内部调用的get/set方法
 const get = (that, type) => that.$date[`get${capitalize(type)}`]() + Number(type === 'month');
-const set = (that, type, ...input) => {
+const set = (that, type, input) => {
   // 输入为非数字直接返回此对象
   // eslint-disable-next-line no-restricted-globals
   if (input.some(isNaN)) return that;
@@ -74,7 +74,10 @@ const set = (that, type, ...input) => {
   else that.$date[`set${capitalize(type)}`](...input);
   return that;
 };
-const gs = (that, type, ...input) => (allDefined(input) ? set(that, type, ...input) : get(that, type));
+const gs = (that, type, input) => {
+  const value = Array.isArray(input) ? input : Array.of(input);
+  return allDefined(value) ? set(that, type, value) : get(that, type);
+};
 
 class DateIO {
   constructor(input) {
@@ -90,7 +93,7 @@ class DateIO {
   // 年
   // 100...2020
   y(...input) {
-    return gs(this, 'fullYear', ...input);
+    return gs(this, 'fullYear', input);
   }
 
   // 年 (4位)
@@ -102,7 +105,7 @@ class DateIO {
   // 加偏移后的月
   // 1...12
   m(...input) {
-    return gs(this, 'month', ...input);
+    return gs(this, 'month', input);
   }
 
   // 月 (前导0)
@@ -138,7 +141,7 @@ class DateIO {
   // 24小时制
   // 0...23
   h(...input) {
-    return gs(this, 'hours', ...input);
+    return gs(this, 'hours', input);
   }
 
   // 24小时制 (前导0)
@@ -150,7 +153,7 @@ class DateIO {
   // 分
   // 0...59
   i(...input) {
-    return gs(this, 'minutes', ...input);
+    return gs(this, 'minutes', input);
   }
 
   // 分 (前导0)
@@ -162,7 +165,7 @@ class DateIO {
   // 秒
   // 0...59
   s(...input) {
-    return gs(this, 'seconds', ...input);
+    return gs(this, 'seconds', input);
   }
 
   // 秒 (前导0)
@@ -174,7 +177,7 @@ class DateIO {
   // 毫秒数
   // 0...999
   ms(...input) {
-    return gs(this, 'milliseconds', ...input);
+    return gs(this, 'milliseconds', input);
   }
 
   MS() {
@@ -219,10 +222,6 @@ class DateIO {
 
   toString() {
     return this.$date.toString();
-  }
-
-  toLocaleString(...input) {
-    return this.$date.toLocaleString(...input);
   }
 
   valueOf() {
