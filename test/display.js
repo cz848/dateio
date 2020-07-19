@@ -11,10 +11,9 @@ afterEach(() => {
 });
 
 test('Original methods', () => {
+  expect(dateio().toDate()).toEqual(new Date());
   expect(dateio().toString()).toBe(new Date().toString());
-  expect(dateio().toLocaleString()).toBe(new Date().toLocaleString());
   expect(dateio().valueOf()).toBe(moment().valueOf());
-  expect(dateio().toDate().toString()).toBe(new Date().toString());
 });
 
 describe('Format', () => {

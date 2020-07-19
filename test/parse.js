@@ -14,12 +14,13 @@ console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
 
 describe('Constructor', () => {
   test('instanceof', () => {
-    expect(dateio() instanceof dateio).toBeTruthy();
-    expect(dateio().set('y', 2018).add('1m') instanceof dateio).toBeTruthy();
-    expect(dateio().clone() instanceof dateio).toBeTruthy();
-    expect(dateio().toDate() instanceof Date).toBeTruthy();
-    expect(dateio().y() instanceof dateio).toBeFalsy();
-    expect(dateio().format() instanceof dateio).toBeFalsy();
+    expect(dateio()).toBeInstanceOf(dateio);
+    expect(dateio().set('y', 2018).add('1m')).toBeInstanceOf(dateio);
+    expect(dateio().clone()).toBeInstanceOf(dateio);
+    expect(dateio().toDate()).toBeInstanceOf(Date);
+      expect(dateio().y(2019)).toBeInstanceOf(dateio);
+    expect(dateio().y()).not.toBeInstanceOf(dateio);
+    expect(dateio().format()).not.toBeInstanceOf(dateio);
   });
 
   test('Now', () => {
@@ -94,7 +95,7 @@ describe('Constructor', () => {
   });
 
   test('Other', () => {
-    expect(dateio(() => '2018-01-01').$date instanceof Date).toBe(true);
+    expect(dateio(() => '2018-01-01').$date).toBeInstanceOf(Date);
     expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 4, 1, 13, 52, 44]));
     expect(+dateio([2018])).toBe(+moment([2018]));
     expect(+dateio(2018)).toBe(+moment(2018));
