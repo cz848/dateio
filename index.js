@@ -4,13 +4,13 @@
  * github: https://github.com/cz848/dateio
  */
 
-// 首字母大写
-const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
+// 判断参数是否定义
+const isDefined = input => ![null, undefined].includes(input);
 
 // 匹配不同方法的正则
 const formatsRegExp = /Mo|mo|MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:Mo|mo|MS|ms|[YMDWHISAUymdwhisau])$/;
-const setUnitRegExp = /^(?:ms|[Uymdhisu])$/;
+const setUnitRegExp = /^(?:ms|[Uymdwhisu])$/;
 const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
 const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
 // 每个时间单位对应的毫秒数或月数
@@ -25,13 +25,13 @@ const unitStep = {
   y: 12,
 };
 const unitMap = {
-  y: 'fullYear',
-  m: 'month',
-  d: 'date',
-  h: 'hours',
-  i: 'minutes',
-  s: 'seconds',
-  ms: 'milliseconds',
+  y: 'FullYear',
+  m: 'Month',
+  d: 'Date',
+  h: 'Hours',
+  i: 'Minutes',
+  s: 'Seconds',
+  ms: 'Milliseconds',
 };
 // 语言包
 let I18N = {
@@ -58,10 +58,9 @@ const monthDiff = (a, b) => {
 
 // 转换为可识别的日期格式
 const toDate = input => {
-  if (!(input || input === 0)) return new Date();
-  if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO: 与原生行为有出入
-  if (Array.isArray(input) && input.length !== 1) return new Date(...input);
+  if (!isDefined(input)) input = Date.now();
+  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
+  else if (Array.isArray(input)) input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
   return new Date(input);
 };
 
@@ -77,20 +76,19 @@ class DateIO {
     if (Number.isNaN(+date)) return this;
 
     const { months, monthsShort, weekdays, interval } = this.I18N;
-    const formats = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
-    const [, Y, M, D, H, I, S, MS] = formats;
+    const [, Y, M, D, H, I, S, MS] = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
     // 年 (4位)
     // 1970...2019
     this.Y = Y;
     // 年 (4位)
     // 1970...2019
-    this.y = Number(Y);
+    this.y = +Y;
     // 加偏移后的月 (前导0)
     // 01...12
     this.M = M;
     // 月
     // 1...12
-    this.m = Number(M);
+    this.m = +M;
     // 月份
     this.Mo = months[this.m - 1];
     // 缩写月份
@@ -100,7 +98,7 @@ class DateIO {
     this.D = D;
     // 日
     // 1...31
-    this.d = Number(D);
+    this.d = +D;
     // 周几
     // 0...6
     this.w = date.getDay();
@@ -112,32 +110,32 @@ class DateIO {
     this.H = H;
     // 24小时制 (前导0)
     // 00...23
-    this.h = Number(H);
+    this.h = +H;
     // 分 (前导0)
     // 00...59
     this.I = I;
     // 分
     // 0...59
-    this.i = Number(I);
+    this.i = +I;
     // 秒 (前导0)
     // 00...59
     this.S = S;
     // 秒
     // 0...59
-    this.s = Number(S);
+    this.s = +S;
     // 毫秒数(前导0)
     // 0...999
     this.MS = MS;
     // 毫秒数
     // 000...999
-    this.ms = Number(MS);
+    this.ms = +MS;
     // 时间段
     this.a = interval[Math.floor((this.h / 24) * interval.length)];
     // 时间段
     this.A = this.a.toUpperCase();
     // 毫秒时间戳 (unix格式)
     // 0...1571136267050
-    this.u = date.valueOf();
+    this.u = +date;
     // 秒时间戳 (unix格式)
     // 0...1542759768
     this.U = Math.round(this.u / 1000);
@@ -148,16 +146,15 @@ class DateIO {
     return getUnitRegExp.test(unit) ? this[unit] : undefined;
   }
 
-  set(unit = '', ...input) {
+  set(unit = '', a, b, c, d) {
     // 遇到非法单位或值直接返回此对象
-    if (!setUnitRegExp.test(unit) || !input.length || input.some(isNaN)) return this;
-    if (unit === 'u') return this.init(input[0]);
-    if (unit === 'U') return this.init(input[0] * 1000);
+    if (!setUnitRegExp.test(unit) || !isDefined(a) || isNaN(a)) return this;
+    if (unit === 'w') return this.add(a - this.w, 'd');
+    if (/u/i.test(unit)) return this.init(a * (unit === 'U' ? 1000 : 1));
     // 处理月份，设置的时候需要-1
-    if (unit === 'y' && input.length > 1) input[1] -= 1;
-    else if (unit === 'm') input[0] -= 1;
-    const type = unitMap[unit];
-    this.$date[`set${capitalize(type)}`](...input);
+    if (unit === 'y' && b) b -= 1;
+    else if (unit === 'm') a -= 1;
+    this.$date[`set${unitMap[unit]}`](...[a, b, c, d].filter(isDefined));
     return this.init(this.$date);
   }
 
@@ -169,12 +166,8 @@ class DateIO {
     return this.$date.toString();
   }
 
-  toLocaleString(...input) {
-    return this.$date.toLocaleString(...input);
-  }
-
   valueOf() {
-    return this.$date.valueOf();
+    return +this.$date;
   }
 
   clone() {
@@ -187,24 +180,23 @@ class DateIO {
   }
 
   // 开始于，默认ms
-  startOf(unit, isStartOf = true) {
+  startOf(unit, isEndOf) {
     let formats = 'y m d h i s';
     formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
     if (!formats) return this;
+    if (unit === 'w') this.set('w', isEndOf ? 6 : 0);
     const dates = this.format(formats).split(' ');
     // 分别对应年/月/日/时/分/秒/毫秒
-    const starts = [0, 1, 1, 0, 0, 0, 0];
-    const ends = [0, 12, 0, 23, 59, 59, 999];
-    const input = isStartOf ? starts : ends;
-    input.splice(0, dates.length, ...dates);
-    if (isStartOf || !/^[ym]$/.test(unit)) input[1] -= 1;
-    if (unit === 'w') input[2] -= this.get('w') - (isStartOf ? 0 : 6);
-    return this.init(input);
+    const starts = [1, 1];
+    const ends = [0, 12, 31, 23, 59, 59, 999];
+    if (unit === 'm') ends[2] = this.daysInMonth();
+    const input = isEndOf ? ends : starts;
+    return this.init(dates.concat(input.slice(dates.length)));
   }
 
   // 结束于，默认ms
   endOf(unit) {
-    return this.startOf(unit, false);
+    return this.startOf(unit, true);
   }
 
   // 返回两个日期的差值，精确到毫秒

@@ -164,7 +164,7 @@ test('Set unknown things', () => {
   expect(dateio().set(false).valueOf()).toBe(moment().set(false).valueOf());
   expect(dateio().set(NaN).valueOf()).toBe(moment().set(NaN).valueOf());
   expect(dateio().set('D', 1).valueOf()).toBe(moment().set('x', 1).valueOf());
-  expect(dateio().set('d', null).valueOf()).toBe(moment().set('D', 0).valueOf());
+  expect(dateio().set('d', null).valueOf()).toBe(moment().set('D', NaN).valueOf());
   expect(dateio().set('d', undefined).valueOf()).toBe(moment().set('D', NaN).valueOf());
   expect(dateio().set('d', false).valueOf()).toBe(moment().set('D', false).valueOf());
   expect(dateio().set('d', NaN).valueOf()).toBe(moment().set('D', NaN).valueOf());
