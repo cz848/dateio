@@ -22,12 +22,12 @@ describe('Format', () => {
   });
 
   test('Format invalid date', () => {
-    expect(dateio('').valueOf()).toBe(+new Date());
+    expect(+dateio('')).toEqual(+moment(''));
     expect(dateio('otherString').toString()).toBe(new Date('otherString').toString());
     expect(dateio(undefined).toString()).toBe(new Date().toString());
     expect(dateio(null).toString()).toBe(new Date().toString());
-    expect(dateio(NaN).toString()).toBe(new Date().toString());
-    expect(dateio(false).toString()).toBe(new Date().toString());
+    expect(dateio(NaN).toString()).toBe(new Date(NaN).toString());
+    expect(dateio(false).toString()).toBe(new Date(false).toString());
   });
 
   test('Format Year(y/Y)', () => {

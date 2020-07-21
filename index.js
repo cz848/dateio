@@ -55,10 +55,11 @@ const monthDiff = (a, b) => {
 
 // 转换为可识别的日期格式
 const toDate = input => {
-  if (!(input || input === 0)) return new Date();
-  if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  if (Array.isArray(input)) return new Date(new Date(input.splice(0, 3)).setHours(...(input.length ? input : [0])));
-  return new Date(input);
+  let date = input;
+  if (!isDefined(input)) date = Date();
+  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) date = input.replace(/-/g, '/');
+  else if (Array.isArray(input)) date = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+  return new Date(date);
 };
 
 // 内部调用的get/set方法
@@ -239,20 +240,17 @@ class DateIO {
 
   // 开始于，默认ms
   startOf(unit, isEndOf) {
-    if (!/^[ymdwhis]$/.test(unit)) return this;
-    let u = unit;
-    if (u === 'w') {
-      this.w(isEndOf ? 6 : 0);
-      u = 'd';
-    }
-    const formats = 'y m d h i s ms'.split(new RegExp(`(?<=${u}) `));
-    let dates = this.format(formats[0]).split(' ');
-    if (isEndOf) {
-      const input = new DateIO('0').ms(-1).format(formats[1]).split(' ');
-      dates = dates.concat(input);
-      if (u === 'm') dates[2] = this.daysInMonth();
-    }
-    return this.init(dates);
+    let formats = 'y m d h i s';
+    formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
+    if (!formats) return this;
+    if (unit === 'w') this.w(isEndOf ? 6 : 0);
+    const dates = this.format(formats).split(' ');
+    // 分别对应年/月/日/时/分/秒/毫秒
+    const starts = [1, 1];
+    const ends = [0, 12, 31, 23, 59, 59, 999];
+    if (unit === 'm') ends[2] = this.daysInMonth();
+    const input = isEndOf ? ends : starts;
+    return this.init(dates.concat(input.slice(dates.length)));
   }
 
   // 结束于，默认ms

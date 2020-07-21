@@ -149,6 +149,7 @@ dateio().i(59, 59);
 dateio().S(); // '40'
 dateio().s(); // 40
 dateio().s(1);
+dateio().s(1, 123);
 ```
 
 ### 毫秒 `.MS()` 或 `.ms(input?: number)`

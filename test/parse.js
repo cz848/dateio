@@ -18,7 +18,7 @@ describe('Constructor', () => {
     expect(dateio().set('y', 2018).add('1m')).toBeInstanceOf(dateio);
     expect(dateio().clone()).toBeInstanceOf(dateio);
     expect(dateio().toDate()).toBeInstanceOf(Date);
-      expect(dateio().y(2019)).toBeInstanceOf(dateio);
+    expect(dateio().y(2019)).toBeInstanceOf(dateio);
     expect(dateio().y()).not.toBeInstanceOf(dateio);
     expect(dateio().format()).not.toBeInstanceOf(dateio);
   });
@@ -49,6 +49,8 @@ describe('Constructor', () => {
     d = '2018-01';
     expect(dateio(d).valueOf()).toBe(moment(d).valueOf());
     d = '2018';
+    expect(dateio(d).format()).toBe(moment(d).format(s));
+    d = '2018-05-02T11:12';
     expect(dateio(d).format()).toBe(moment(d).format(s));
     d = '2018-05-02T11:12:13.432Z';
     expect(dateio(d).format()).toBe(moment(d).format(s));
@@ -101,6 +103,9 @@ describe('Constructor', () => {
     expect(+dateio(2018)).toBe(+moment(2018));
     expect(+dateio([2018, 2])).toBe(+moment([2018, 1]));
     expect(+dateio(2018, 2, 1)).toBe(+moment(2018));
+    expect(+dateio([1987, 6])).toBe(+moment([1987, 5]));
+    expect(+dateio([1941, 9, 10])).toBe(+moment([1941, 8, 10]));
+    // expect(+dateio([0])).toBe(+moment([0]));
   });
 
   test('Invalid values', () => {
@@ -108,7 +113,7 @@ describe('Constructor', () => {
     expect(dateio('otherString').toString().toLowerCase()).toBe(moment('otherString').toString().toLowerCase());
     expect(dateio(null).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment().toString().toLowerCase());
     expect(dateio(undefined).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment(undefined).toString().toLowerCase());
-    expect(dateio(NaN).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment().toString().toLowerCase());
+    expect(dateio(NaN).toString().toLowerCase()).toBe(moment(NaN).toString().toLowerCase());
   });
 
   test('Number 0', () => {
