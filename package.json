@@ -43,7 +43,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "gzip-size-cli": "^3.0.0",
     "mockdate": "^2.0.5",
-    "moment": "^2.27.0",
+    "moment": "^2.24.0",
     "rollup": "^2.22.1",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-uglify": "^6.0.4",
