@@ -1,4 +1,6 @@
 .babelrc
+.editorconfig
+.eslintrc.js
 coverage
 test
 jest.config.js
