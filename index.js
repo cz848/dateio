@@ -111,8 +111,8 @@ class DateIO {
 
   // 日
   // 1...31
-  d(input) {
-    return gs(this, 'Date', [input]);
+  d(d) {
+    return gs(this, 'Date', [d]);
   }
 
   // 日 (前导0)
@@ -123,8 +123,8 @@ class DateIO {
 
   // 周几
   // 0...6
-  w(input) {
-    return gs(this, 'Day', [input]);
+  w(w) {
+    return gs(this, 'Day', [w]);
   }
 
   // 周几
@@ -191,14 +191,14 @@ class DateIO {
 
   // unix 偏移量 (毫秒)
   // 0...1571136267050
-  u(input) {
-    return isDefined(input) ? this.init(input) : +this;
+  u(u) {
+    return isDefined(u) ? this.init(u) : +this;
   }
 
   // Unix 时间戳 (秒)
   // 0...1542759768
-  U(input) {
-    return isDefined(input) ? this.init(input * 1000) : Math.round(this / 1000);
+  U(U) {
+    return isDefined(U) ? this.init(U * 1000) : Math.round(this / 1000);
   }
 
   // 获取以上格式的日期，每个unit对应其中一种格式
