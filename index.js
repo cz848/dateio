@@ -6,11 +6,11 @@
 
 // 转换为可识别的日期格式
 const toDate = input => {
-  if (!(input || input === 0)) return new Date();
-  if (typeof input === 'string' && !/Z$/i.test(input)) return new Date(input.replace(/-/g, '/'));
-  // TODO: 与原生行为有出入
-  if (Array.isArray(input) && input.length !== 1) return new Date(...input);
-  return new Date(input);
+  let date = input;
+  if ([null, undefined].includes(input)) date = Date.now();
+  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) date = input.replace(/-/g, '/');
+  else if (Array.isArray(input)) date = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+  return new Date(date);
 };
 
 class DateIO {
@@ -22,9 +22,9 @@ class DateIO {
   get(unit) {
     if (!unit) return undefined;
     const date = this.$date;
-    let res;
+    let value;
     if (/^[wu]$/i.test(unit)) {
-      res = {
+      value = {
         w: date.getDay(),
         W: '日一二三四五六'[date.getDay()],
         u: +date,
@@ -32,12 +32,12 @@ class DateIO {
       }[unit];
     } else {
       // 转换成中国时区并输出'2019-10-10T15:10:22:123Z'的形式，再解析出所需要的数值
-      res = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString()
-        .replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i,
+      value = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString()
+        .replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z$/i,
           (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
     }
-    if (/^(?:ms|[ymdhis])$/.test(unit)) res = Number(res);
-    return res || res === 0 ? res : undefined;
+    if (/^(?:ms|[ymdhis])$/.test(unit)) value = +value;
+    return value || value === 0 ? value : undefined;
   }
 
   // 利用格式化串格式化日期

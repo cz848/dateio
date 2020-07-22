@@ -14,10 +14,9 @@ console.warn = () => {}; // moment.js '2018-4-1 1:1:1:22' will throw warn
 
 describe('Constructor', () => {
   test('instanceof', () => {
-    expect(dateio() instanceof dateio).toBeTruthy();
-    expect(dateio().$date instanceof Date).toBeTruthy();
-    expect(dateio().get('y') instanceof dateio).toBeFalsy();
-    expect(dateio().format() instanceof dateio).toBeFalsy();
+    expect(dateio()).toBeInstanceOf(dateio);
+    expect(dateio().get('y')).not.toBeInstanceOf(dateio);
+    expect(dateio().format()).not.toBeInstanceOf(dateio);
   });
 
   test('Now', () => {
@@ -46,6 +45,8 @@ describe('Constructor', () => {
     d = '2018-01';
     expect(dateio(d).valueOf()).toBe(moment(d).valueOf());
     d = '2018';
+    expect(dateio(d).format()).toBe(moment(d).format(s));
+    d = '2018-05-02T11:12';
     expect(dateio(d).format()).toBe(moment(d).format(s));
     d = '2018-05-02T11:12:13.432Z';
     expect(dateio(d).format()).toBe(moment(d).format(s));
@@ -82,17 +83,24 @@ describe('Constructor', () => {
     expect(+c).toBe(+d);
   });
 
-  test('rejects invalid values', () => {
-    expect(dateio({}).toString()).toBe(new Date('').toString());
-    expect(dateio(() => '2018-01-01').$date instanceof Date).toBe(true);
-    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(1527832364000); // Arrays with time part
+  test('Other', () => {
+    expect(dateio(() => '2018-01-01').$date).toBeInstanceOf(Date);
+    expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 4, 1, 13, 52, 44]));
+    expect(+dateio([2018])).toBe(+moment([2018]));
+    expect(+dateio(2018)).toBe(+moment(2018));
+    expect(+dateio([2018, 2])).toBe(+moment([2018, 1]));
+    expect(+dateio(2018, 2, 1)).toBe(+moment(2018));
+    expect(+dateio([1987, 6])).toBe(+moment([1987, 5]));
+    expect(+dateio([1941, 9, 10])).toBe(+moment([1941, 8, 10]));
+    // expect(+dateio([0])).toBe(+moment([0]));
   });
 
-  test('String Other, Null, NaN and undefined', () => {
+  test('Invalid values', () => {
+    expect(dateio({}).toString()).toBe(new Date('').toString());
     expect(dateio('otherString').toString().toLowerCase()).toBe(moment('otherString').toString().toLowerCase());
     expect(dateio(null).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment().toString().toLowerCase());
     expect(dateio(undefined).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment(undefined).toString().toLowerCase());
-    expect(dateio(NaN).toString().toLowerCase().replace(/ \(.+\)$/, '')).toBe(moment().toString().toLowerCase());
+    expect(dateio(NaN).toString().toLowerCase()).toBe(moment(NaN).toString().toLowerCase());
   });
 
   test('Number 0', () => {
