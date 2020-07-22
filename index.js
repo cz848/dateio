@@ -11,7 +11,7 @@ const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || 
 const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
 
 // 值是否定义
-const isDefined = value => ![null, undefined].includes(value);
+const isDefined = value => [null, undefined].indexOf(value) < 0;
 
 // 参数是否全部都定义了
 const allDefined = args => args.length && args.every(isDefined);
@@ -177,7 +177,7 @@ class DateIO {
 
   // 毫秒数
   // 0...999
-  ms(...input) {
+  ms(input) {
     return gs(this, 'milliseconds', input);
   }
 
