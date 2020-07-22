@@ -5,14 +5,14 @@
  */
 
 // 判断参数是否定义
-const isDefined = input => ![null, undefined].includes(input);
+const isDefined = input => ![null, undefined].indexOf(input) >= 0;
 
 // 匹配不同方法的正则
 const formatsRegExp = /Mo|mo|MS|ms|[YMDWHISAUymdwhisau]/g;
 const getUnitRegExp = /^(?:Mo|mo|MS|ms|[YMDWHISAUymdwhisau])$/;
 const setUnitRegExp = /^(?:ms|[Uymdwhisu])$/;
 const addUnitRegExp = /^([+-]?(?:\d*\.)?\d+)(ms|[ymdwhis])?$/;
-const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z+$/i;
+const validDateRegExp = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z?$/i;
 // 每个时间单位对应的毫秒数或月数
 const unitStep = {
   ms: 1,
@@ -73,10 +73,11 @@ class DateIO {
   init(input) {
     const date = toDate(input);
     this.$date = date;
-    if (Number.isNaN(+date)) return this;
+    if (isNaN(date)) return this;
 
     const { months, monthsShort, weekdays, interval } = this.I18N;
-    const [, Y, M, D, H, I, S, MS] = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
+    const formats = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
+    const [, Y, M, D, H, I, S, MS] = formats;
     // 年 (4位)
     // 1970...2019
     this.Y = Y;
@@ -209,7 +210,7 @@ class DateIO {
     if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
-    return isFloat ? diff : Math.trunc(diff);
+    return isFloat ? diff : parseInt(diff, 10);
   }
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
