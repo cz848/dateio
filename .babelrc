@@ -2,14 +2,6 @@
   "env": {
     "test": {
       "plugins": ["transform-es2015-modules-commonjs"]
-    },
-    "build": {
-      "presets": [
-        ["@babel/preset-env", {
-          "modules": false,
-          "loose": true
-        }]
-      ]
     }
   }
 }

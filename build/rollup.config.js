@@ -1,5 +1,5 @@
 const babel = require('rollup-plugin-babel');
-const { uglify } = require('rollup-plugin-uglify');
+const { terser } = require('rollup-plugin-terser');
 
 module.exports = config => {
   const { input, fileName, name } = config;
@@ -10,15 +10,12 @@ module.exports = config => {
         'dateio',
       ],
       plugins: [
-        babel({
-          exclude: 'node_modules/**',
-        }),
-        uglify(),
+        terser(),
       ],
     },
     output: {
       file: fileName,
-      format: 'umd',
+      format: 'es',
       name: name || 'dateio',
       globals: {
         dateio: 'dateio',
