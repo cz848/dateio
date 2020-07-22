@@ -20,7 +20,7 @@ class DateIO {
 
   // 获取不同格式的日期，每个unit对应一种格式
   get(unit) {
-    if (!unit) return undefined;
+    if (!unit) return;
     const date = this.$date;
     let value;
     if (/^[wu]$/i.test(unit)) {
@@ -36,7 +36,7 @@ class DateIO {
         .replace(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}).(\d{3})Z$/i,
           (...arg) => arg['_YMDHISMS'.search(unit.toUpperCase())] || '');
     }
-    if (/^(?:ms|[ymdhis])$/.test(unit)) value = +value;
+    if (/^(?:ms|[ymdhis])$/.test(unit)) value -= 0;
     return value || value === 0 ? value : undefined;
   }
 
