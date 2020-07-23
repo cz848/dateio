@@ -7,14 +7,8 @@
 // 位数不够前补0，为了更好的兼容，用slice替代padStart
 const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
-// 首字母大写
-const capitalize = string => string.replace(/^[a-z]/, a => a.toUpperCase());
-
 // 值是否定义
 const isDefined = value => [null, undefined].indexOf(value) < 0;
-
-// 参数是否全部都定义了
-const allDefined = args => args.length && args.every(isDefined);
 
 // 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
@@ -63,21 +57,22 @@ const toDate = input => {
 };
 
 // 内部调用的get/set方法
-const get = (that, type) => that.$date[`get${capitalize(type)}`]() + Number(type === 'month');
+const get = (that, type) => that.$date[`get${type}`]() + Number(type === 'Month');
 const set = (that, type, input) => {
   // 输入为非数字直接返回此对象
   // eslint-disable-next-line no-restricted-globals
   if (input.some(isNaN)) return that;
   // 处理原生月份的偏移量
-  if (type === 'fullYear' && input.length > 1) input[1] -= 1;
-  else if (type === 'month') input[0] -= 1;
-  if (type === 'day') that.add(input[0] - that.w(), 'd');
-  else that.$date[`set${capitalize(type)}`](...input);
+  if (type === 'FullYear' && input.length > 1) input[1] -= 1;
+  else if (type === 'Month') input[0] -= 1;
+  // 得到最终结果
+  if (type === 'Day') that.add(input[0] - that.w(), 'd');
+  else that.$date[`set${type}`](...input);
   return that;
 };
 const gs = (that, type, input) => {
-  const value = Array.isArray(input) ? input : Array.of(input);
-  return allDefined(value) ? set(that, type, value) : get(that, type);
+  const value = [].concat(input).filter(isDefined);
+  return value.length ? set(that, type, value) : get(that, type);
 };
 
 class DateIO {
@@ -94,7 +89,7 @@ class DateIO {
   // 年
   // 100...2020
   y(...input) {
-    return gs(this, 'fullYear', input);
+    return gs(this, 'FullYear', input);
   }
 
   // 年 (4位)
@@ -106,7 +101,7 @@ class DateIO {
   // 加偏移后的月
   // 1...12
   m(...input) {
-    return gs(this, 'month', input);
+    return gs(this, 'Month', input);
   }
 
   // 月 (前导0)
@@ -118,7 +113,7 @@ class DateIO {
   // 日
   // 1...31
   d(input) {
-    return gs(this, 'date', input);
+    return gs(this, 'Date', input);
   }
 
   // 日 (前导0)
@@ -130,7 +125,7 @@ class DateIO {
   // 周几
   // 0...6
   w(input) {
-    return gs(this, 'day', input);
+    return gs(this, 'Day', input);
   }
 
   // 周几
@@ -142,7 +137,7 @@ class DateIO {
   // 24小时制
   // 0...23
   h(...input) {
-    return gs(this, 'hours', input);
+    return gs(this, 'Hours', input);
   }
 
   // 24小时制 (前导0)
@@ -154,7 +149,7 @@ class DateIO {
   // 分
   // 0...59
   i(...input) {
-    return gs(this, 'minutes', input);
+    return gs(this, 'Minutes', input);
   }
 
   // 分 (前导0)
@@ -166,7 +161,7 @@ class DateIO {
   // 秒
   // 0...59
   s(...input) {
-    return gs(this, 'seconds', input);
+    return gs(this, 'Seconds', input);
   }
 
   // 秒 (前导0)
@@ -178,7 +173,7 @@ class DateIO {
   // 毫秒数
   // 0...999
   ms(input) {
-    return gs(this, 'milliseconds', input);
+    return gs(this, 'Milliseconds', input);
   }
 
   MS() {
