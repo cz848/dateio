@@ -10,6 +10,12 @@
 npm install dateio
 ```
 
+如果只需要最基本的取值和格式化日期功能，请安装：
+
+```javascript
+npm install cz848/dateio#get
+```
+
 # APIs
 
 　　dateio.js为`Date`对象创建了一个包装器，称为`DateIO`对象。`DateIO`对象又被`dateio`包装为一个函数，使得传入一个`DateIO`对象时返回它的新实例。以下方法要么返回具体值，要么返回一个`DateIO`对象以便可以链式调用。
@@ -29,6 +35,7 @@ dateio();
 #### 传入日期字符串
 
 ```javascript
+dateio('2019-10-20');
 dateio('2019-10-20 15:20:45');
 dateio('2019-10-20T15:20:45Z');
 dateio('2020-01-28 10:04:33.555');
