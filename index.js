@@ -77,59 +77,21 @@ class DateIO {
 
     const { months, monthsShort, weekdays, interval } = this.I18N;
     const formats = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
-    const [, Y, M, D, H, I, S, MS] = formats;
-    // 年 (4位)
-    // 1970...2019
-    this.Y = Y;
-    // 年 (4位)
-    // 1970...2019
-    this.y = +Y;
-    // 加偏移后的月 (前导0)
-    // 01...12
-    this.M = M;
-    // 月
-    // 1...12
-    this.m = +M;
-    // 月份
-    this.Mo = months[M - 1];
-    // 缩写月份
-    this.mo = monthsShort[M - 1];
-    // 日 (前导0)
-    // 01...31
-    this.D = D;
-    // 日
-    // 1...31
-    this.d = +D;
+    'Y|M|D|H|I|S|MS'.split('|').forEach((x, i) => {
+      // 大写为字符型4位的年或有前导0的日期
+      this[x] = formats[i + 1];
+      // 小写为数值型日期
+      this[x.toLowerCase()] = +this[x];
+    });
+    // 本地化的月份
+    this.Mo = months[this.m - 1];
+    // 缩写的本地化月份
+    this.mo = monthsShort[this.m - 1];
     // 周几
     // 0...6
     this.w = date.getDay();
-    // 周几
     // 本地化后的星期几
     this.W = weekdays[this.w];
-    // 24小时制
-    // 0...23
-    this.H = H;
-    // 24小时制 (前导0)
-    // 00...23
-    this.h = +H;
-    // 分 (前导0)
-    // 00...59
-    this.I = I;
-    // 分
-    // 0...59
-    this.i = +I;
-    // 秒 (前导0)
-    // 00...59
-    this.S = S;
-    // 秒
-    // 0...59
-    this.s = +S;
-    // 毫秒数(前导0)
-    // 0...999
-    this.MS = MS;
-    // 毫秒数
-    // 000...999
-    this.ms = +MS;
     // 时间段
     this.a = interval[Math.floor((this.h / 24) * interval.length)];
     // 时间段
@@ -232,7 +194,7 @@ class DateIO {
 
   // 是否为闰年
   isLeapYear() {
-    const y = this.y;
+    const { y } = this;
     return y % 100 ? y % 4 === 0 : y % 400 === 0;
   }
 

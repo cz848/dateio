@@ -10,6 +10,12 @@
 npm install dateio
 ```
 
+如果只需要最基本的取值和格式化日期功能，请安装：
+
+```javascript
+npm install cz848/dateio#get
+```
+
 # APIs
 
 　　dateio.js为`Date`对象创建了一个包装器，称为`DateIO`对象。`DateIO`对象又被`dateio`包装为一个函数，使得传入一个`DateIO`对象时返回它的新实例。以下方法要么返回具体值，要么返回一个`DateIO`对象以便可以链式调用。
@@ -35,6 +41,8 @@ dateio('2019-10-20 15:20:45');
 #### 传入日期数组
 
 ```javascript
+dateio([2019]);
+dateio([2019, 10, 20]);
 dateio([2019, 10, 20, 15, 20, 45]);
 ```
 
@@ -355,6 +363,8 @@ dateio('2016').isLeapYear(); // true
 ```javascript
 // 默认语言包
 dateio.locale({
+  months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
+  monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   // 时间段，可根据传入数组的长度均分一天中的时间
   interval: ['凌晨', '上午', '下午', '晚上'],
   // 星期
@@ -363,6 +373,8 @@ dateio.locale({
 
 // 定义其它语言包
 dateio.locale({
+  months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   interval: ['a.m.', 'p.m.'],
   weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
 });
