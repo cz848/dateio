@@ -5,7 +5,7 @@
  */
 
 // 判断参数是否定义
-const isDefined = input => ![null, undefined].indexOf(input) >= 0;
+const isDefined = input => [null, undefined].indexOf(input) < 0;
 
 // 匹配不同方法的正则
 const formatsRegExp = /Mo|mo|MS|ms|[YMDWHISAUymdwhisau]/g;
@@ -91,9 +91,9 @@ class DateIO {
     // 1...12
     this.m = +M;
     // 月份
-    this.Mo = months[this.m - 1];
+    this.Mo = months[M - 1];
     // 缩写月份
-    this.mo = monthsShort[this.m - 1];
+    this.mo = monthsShort[M - 1];
     // 日 (前导0)
     // 01...31
     this.D = D;
@@ -104,7 +104,7 @@ class DateIO {
     // 0...6
     this.w = date.getDay();
     // 周几
-    // 本地化后的星期x
+    // 本地化后的星期几
     this.W = weekdays[this.w];
     // 24小时制
     // 0...23
@@ -153,7 +153,7 @@ class DateIO {
     if (unit === 'w') return this.add(a - this.w, 'd');
     if (/u/i.test(unit)) return this.init(a * (unit === 'U' ? 1000 : 1));
     // 处理月份，设置的时候需要-1
-    if (unit === 'y' && b) b -= 1;
+    if (unit === 'y' && (b || b === 0)) b -= 1;
     else if (unit === 'm') a -= 1;
     this.$date[`set${unitMap[unit]}`](...[a, b, c, d].filter(isDefined));
     return this.init(this.$date);
@@ -222,8 +222,8 @@ class DateIO {
 
     const [, addend, addUnit = unit || 'ms'] = pattern;
     // 年月转化为月，并四舍五入
-    if (/^[ym]$/.test(addUnit)) return this.set('m', this.get('m') + Number((addend * unitStep[addUnit]).toFixed(0)));
-    return this.init(addend * (unitStep[addUnit] || 0) + this.valueOf());
+    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m + (addend * unitStep[addUnit]).toFixed(0) * 1);
+    return this.init(addend * (unitStep[addUnit] || 0) + this * 1);
   }
 
   subtract(input, unit) {
@@ -232,14 +232,14 @@ class DateIO {
 
   // 是否为闰年
   isLeapYear() {
-    const y = this.get('y');
+    const y = this.y;
     return y % 100 ? y % 4 === 0 : y % 400 === 0;
   }
 
   // 获取某月有多少天
   daysInMonth() {
-    const monthDays = [31, 28 + Number(this.isLeapYear()), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return monthDays[this.get('m') - 1];
+    const monthDays = [31, 28 + this.isLeapYear() * 1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    return monthDays[this.m - 1];
   }
 
   // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
