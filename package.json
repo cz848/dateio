@@ -1,17 +1,25 @@
 {
   "name": "dateio",
-  "version": "1.3.0",
+  "version": "1.3.4",
   "description": "A lightweight JavaScript date library for display and formatting dates.",
-  "main": "index.js",
+  "main": "dateio.min.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
+    "build": "cross-env BABEL_ENV=build node build && npm run size",
+    "size": "size-limit && gzip-size dateio.min.js",
     "lint": "eslint index.js",
     "lint:jest": "eslint test/",
     "test": "jest",
     "coverage": "open ./coverage/lcov-report/index.html"
   },
+  "size-limit": [
+    {
+      "limit": "2 KB",
+      "path": "dateio.min.js"
+    }
+  ],
   "keywords": [
     "date",
     "formatter",
@@ -23,13 +31,19 @@
   "license": "MIT",
   "repository": "cz848/dateio#get",
   "devDependencies": {
+    "@size-limit/preset-small-lib": "^4.5.5",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "eslint": "^7.4.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.18.0",
     "eslint-plugin-promise": "^4.2.1",
+    "gzip-size-cli": "^3.0.0",
     "mockdate": "^2.0.5",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "rollup": "^2.22.1",
+    "rollup-plugin-terser": "^6.1.0",
+    "size-limit": "^4.5.5"
   }
 }
