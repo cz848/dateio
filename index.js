@@ -4,18 +4,14 @@
  * github: https://github.com/cz848/dateio#get
  */
 
-// 转换为可识别的日期格式
-const toDate = input => {
-  let date = input;
-  if ([null, undefined].includes(input)) date = Date.now();
-  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) date = input.replace(/-/g, '/');
-  else if (Array.isArray(input)) date = new Date(input.splice(0, 3)).setHours(...input.concat(0));
-  return new Date(date);
-};
-
+/* eslint-disable no-param-reassign */
 class DateIO {
+  // 转换为可识别的日期格式
   constructor(input) {
-    this.$date = toDate(input);
+    if ([null, undefined].indexOf(input) > -1) input = Date.now();
+    else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
+    else if (Array.isArray(input)) input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+    this.$date = new Date(input);
   }
 
   // 获取不同格式的日期，每个unit对应一种格式
@@ -50,7 +46,7 @@ class DateIO {
   }
 
   valueOf() {
-    return this.$date.valueOf();
+    return +this.$date;
   }
 }
 
