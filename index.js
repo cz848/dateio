@@ -39,7 +39,7 @@ let I18N = {
   monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
-  interval: ['凌晨', '上午', '下午', '晚上'],
+  meridiem: ['凌晨', '上午', '下午', '晚上'],
 };
 
 // 设置语言包
@@ -75,7 +75,7 @@ class DateIO {
     this.$date = date;
     if (isNaN(date)) return this;
 
-    const { months, monthsShort, weekdays, interval } = this.I18N;
+    const { months, monthsShort, weekdays, meridiem } = this.I18N;
     const formats = new Date(+date - date.getTimezoneOffset() * 6e4).toISOString().match(validDateRegExp);
     'Y|M|D|H|I|S|MS'.split('|').forEach((x, i) => {
       // 大写为字符型4位的年或有前导0的日期
@@ -93,9 +93,9 @@ class DateIO {
     // 本地化后的星期几
     this.W = weekdays[this.w];
     // 时间段
-    this.a = interval[Math.floor((this.h / 24) * interval.length)];
+    this.a = typeof meridiem === 'function' ? meridiem(this.h, this.i) : meridiem[~~((this.h / 24) * meridiem.length)];
     // 时间段
-    this.A = this.a.toUpperCase();
+    this.A = this.a.toLocaleUpperCase();
     // 毫秒时间戳 (unix格式)
     // 0...1571136267050
     this.u = +date;
@@ -167,9 +167,8 @@ class DateIO {
   // isFloat: 是否返回小数
   diff(input, unit, isFloat = false) {
     const that = new DateIO(input);
-    const md = monthDiff(this, that);
     let diff = this - that;
-    if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
+    if (/^[ym]$/.test(unit)) diff = monthDiff(this, that) / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
     return isFloat ? diff : parseInt(diff, 10);
@@ -200,11 +199,10 @@ class DateIO {
 
   // 获取某月有多少天
   daysInMonth() {
-    const monthDays = [31, 28 + this.isLeapYear() * 1, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return monthDays[this.m - 1];
+    return this.set('m', this.m + 1, 0).d;
   }
 
-  // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
+  // 比较两个日期是否具有相同的年/月/日/周/时/分/秒，默认精确比较到毫秒
   isSame(input, unit) {
     return +this.clone().startOf(unit) === +new DateIO(input).startOf(unit);
   }

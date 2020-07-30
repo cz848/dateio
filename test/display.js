@@ -146,8 +146,11 @@ describe('Difference', () => {
     });
     expect(dateio('2018-07-08').diff(dateio('2018-07-08'), 'm')).toEqual(0);
     expect(dateio('2018-09-08').diff(dateio('2018-08-08'), 'm')).toEqual(1);
-    expect(dateio('2018-07-08').diff(dateio('2018-08-08'), 'm')).toEqual(-1);
-    expect(dateio('2018-01-01').diff(dateio('2018-01-01'), 'm')).toEqual(0);
+    expect(dateio('2018-09-08').diff(dateio('2018-08-06'), 'm')).toEqual(1);
+    expect(dateio('2018-07-08').diff(dateio('2018-08-16'), 'm')).toEqual(-1);
+    expect(dateio('2018-07-08').diff(dateio('2018-08-07'), 'm')).toEqual(-0);
+    expect(dateio('2018-01-01').diff(dateio('2018-01-03'), 'm')).toEqual(-0);
+    expect(dateio('2018-02-03').diff(dateio('2018-02-01'), 'm')).toEqual(0);
   });
 
   test('Unknown string diff', () => {
