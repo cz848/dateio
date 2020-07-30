@@ -10,12 +10,13 @@ module.exports = config => {
         'dateio',
       ],
       plugins: [
+        babel(),
         terser(),
       ],
     },
     output: {
       file: fileName,
-      format: 'es',
+      format: 'umd',
       name: name || 'dateio',
       globals: {
         dateio: 'dateio',
