@@ -10,6 +10,12 @@
 npm install dateio
 ```
 
+如果只需要最基本的取值和格式化日期功能，请安装：
+
+```javascript
+npm install cz848/dateio#get
+```
+
 # APIs
 
 　　dateio.js为`Date`对象创建了一个包装器，称为`DateIO`对象。`DateIO`对象又被`dateio`包装为一个函数，使得传入一个`DateIO`对象时返回它的新实例。以下方法要么返回具体值，要么返回一个`DateIO`对象以便可以链式调用。
@@ -29,6 +35,7 @@ dateio();
 #### 传入日期字符串
 
 ```javascript
+dateio('2019-10-20');
 dateio('2019-10-20 15:20:45');
 dateio('2019-10-20T15:20:45Z');
 dateio('2020-01-28 10:04:33.555');
@@ -337,16 +344,18 @@ dateio('2019-10-20').daysInMonth(); // 31
 dateio('2019-10-20').toDate();
 ```
 
+比如：
+
+```javascript
+dateio('2019-10-20').toDate().toLocaleString();
+dateio('2019-10-20').toDate().toISOString();
+dateio('2019-10-20').toDate().toUTCString();
+```
+
 ### 转换成字符串 `.toString()`
 
 ```javascript
 dateio('2019-10-20').toString(); // Sun Oct 20 2019 00:00:00 GMT+0800 (中国标准时间)
-```
-
-### 转换成本地化的字符串 `.toLocaleString()`
-
-```javascript
-dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
 ```
 
 ## 查询
@@ -361,6 +370,7 @@ dateio().isSame(new Date, 'y'); // true
 dateio('2020-1-4').isSame(dateio('2019-1-4'), 'm'); // false
 dateio().isSame(1571587652864, 'm');
 dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-5 10:04:21'), 'h') // false
+dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-6 10:04:21'), 'w') // true
 ```
 
 ### 是否为闰年 `.isLeapYear()`
@@ -379,14 +389,28 @@ dateio('2016').isLeapYear(); // true
 // 默认语言包
 dateio.locale({
   // 时间段，可根据传入数组的长度均分一天中的时间
-  interval: ['凌晨', '上午', '下午', '晚上'],
+  meridiem: ['凌晨', '上午', '下午', '晚上'],
   // 星期
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
 });
 
 // 定义其它语言包
 dateio.locale({
-  interval: ['a.m.', 'p.m.'],
+  meridiem: ['a.m.', 'p.m.'],
   weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+});
+```
+
+`meridiem`也可以传入函数，它接收日期的小时和分钟参数。
+
+```javascript
+dateio.locale({
+  meridiem(h, i) {
+    if (h >= 0 && h < 5) return '凌晨';
+    if ((h >= 5 && h < 11) || (h === 11 && i <= 30)) return '上午';
+    if ((h === 11 && i > 30) || (h === 12 && i <= 30)) return '中午';
+    if ((h === 12 && i > 30) || (h > 12 && h < 19)) return '下午';
+    return '晚上';
+  },
 });
 ```

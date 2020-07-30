@@ -103,8 +103,8 @@ test('Set Year', () => {
 test('Set Month', () => {
   expect(dateio().set('m', 11).valueOf()).toBe(moment().set('month', 10).valueOf());
   expect(dateio().m(1).valueOf()).toBe(moment().month(0).valueOf());
-  expect(dateio().m(2).valueOf()).toBe(moment().month(1).valueOf());
-  expect(dateio().m(12, 4).valueOf()).toBe(new Date().setMonth(11, 4));
+  expect(dateio().m(2).valueOf()).toBe(new Date().setMonth(1));
+  expect(dateio().m(11, 31).valueOf()).toBe(new Date().setMonth(10, 31));
 });
 
 test('Set Day', () => {

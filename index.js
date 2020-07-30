@@ -30,7 +30,7 @@ const unitStep = {
 let I18N = {
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
   // 默认四个时段，可根据需要增减
-  interval: ['凌晨', '上午', '下午', '晚上'],
+  meridiem: ['凌晨', '上午', '下午', '晚上'],
 };
 
 // 设置语言包
@@ -65,7 +65,8 @@ const set = (that, type, input) => {
   // 处理原生月份的偏移量
   if (type === 'FullYear' && input.length > 1) input[1] -= 1;
   else if (type === 'Month') input[0] -= 1;
-  if (type === 'Day') that.add(input[0] - that.w(), 'd');
+  // 得到最终结果
+  if (type === 'Day') that.add(input[0] - get(that, type), 'd');
   else that.$date[`set${type}`](...input);
   return that;
 };
@@ -181,7 +182,9 @@ class DateIO {
 
   // 时间段
   a() {
-    return this.I18N.interval[Math.floor((this.h() / 24) * this.I18N.interval.length)];
+    const { meridiem } = this.I18N;
+    if (typeof meridiem === 'function') return meridiem(this.h(), this.i());
+    return meridiem[Math.floor((this.h() / 24) * meridiem.length)];
   }
 
   // 时间段
@@ -257,9 +260,8 @@ class DateIO {
   // isFloat: 是否返回小数
   diff(input, unit, isFloat = false) {
     const that = new DateIO(input);
-    const md = monthDiff(this, that);
     let diff = this - that;
-    if (/^[ym]$/.test(unit)) diff = md / unitStep[unit];
+    if (/^[ym]$/.test(unit)) diff = monthDiff(this, that) / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
     return isFloat ? diff : Math.trunc(diff);
@@ -290,11 +292,10 @@ class DateIO {
 
   // 获取某月有多少天
   daysInMonth() {
-    const monthDays = [31, 28 + Number(this.isLeapYear()), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    return monthDays[this.m() - 1];
+    return this.m(this.m() + 1, 0).d();
   }
 
-  // 比较两个日期是否具有相同的年/月/日/时/分/秒，默认精确比较到毫秒
+  // 比较两个日期是否具有相同的年/月/日/周/时/分/秒，默认精确比较到毫秒
   isSame(input, unit) {
     return +this.clone().startOf(unit) === +new DateIO(input).startOf(unit);
   }
