@@ -344,6 +344,14 @@ dateio('2019-10-20').daysInMonth(); // 31
 dateio('2019-10-20').toDate();
 ```
 
+比如：
+
+```javascript
+dateio('2019-10-20').toDate().toLocaleString();
+dateio('2019-10-20').toDate().toISOString();
+dateio('2019-10-20').toDate().toUTCString();
+```
+
 ### 转换成字符串 `.toString()`
 
 ```javascript
