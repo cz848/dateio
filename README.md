@@ -350,12 +350,6 @@ dateio('2019-10-20').toDate();
 dateio('2019-10-20').toString(); // Sun Oct 20 2019 00:00:00 GMT+0800 (中国标准时间)
 ```
 
-### 转换成本地化的字符串 `.toLocaleString()`
-
-```javascript
-dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
-```
-
 ## 查询
 
 ### 是否相同 `.isSame(compared: Date like | DateIO, unit?: string)`
