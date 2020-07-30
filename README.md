@@ -368,6 +368,7 @@ dateio().isSame(new Date, 'y'); // true
 dateio('2020-1-4').isSame(dateio('2019-1-4'), 'm'); // false
 dateio().isSame(1571587652864, 'm');
 dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-5 10:04:21'), 'h') // false
+dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-6 10:04:21'), 'w') // true
 ```
 
 ### 是否为闰年 `.isLeapYear()`
@@ -386,14 +387,28 @@ dateio('2016').isLeapYear(); // true
 // 默认语言包
 dateio.locale({
   // 时间段，可根据传入数组的长度均分一天中的时间
-  interval: ['凌晨', '上午', '下午', '晚上'],
+  meridiem: ['凌晨', '上午', '下午', '晚上'],
   // 星期
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
 });
 
 // 定义其它语言包
 dateio.locale({
-  interval: ['a.m.', 'p.m.'],
+  meridiem: ['a.m.', 'p.m.'],
   weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+});
+```
+
+`meridiem`也可以传入函数，它接收日期的小时和分钟参数。
+
+```javascript
+dateio.locale({
+  meridiem(h, i) {
+    if (h >= 0 && h < 5) return '凌晨';
+    if ((h >= 5 && h < 11) || (h === 11 && i <= 30)) return '上午';
+    if ((h === 11 && i > 30) || (h === 12 && i <= 30)) return '中午';
+    if ((h === 12 && i > 30) || (h > 12 && h < 19)) return '下午';
+    return '晚上';
+  },
 });
 ```
