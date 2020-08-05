@@ -1,6 +1,6 @@
 # dateio
 
-　　这是一个轻量级、无依赖的日期处理类库，用于日期的取值、格式化显示及计算等，主要针对于小程序这种对体积有一定限制的环境使用，当然也可以用于其它支持ES6语法的环境。
+　　这是一个超轻量级、零依赖的日期处理类库，用于日期的取值、格式化显示及计算等，主要针对于对代码体积有一定限制，同时支持ES6语法的环境。
 
 　　API参考了 `moment.js` 和 `day.js`，但是省去了很多平时用不到或很少使用的API，只保留最有用的一些功能（会根据需要增加）。这样也大幅减小了体积。并且为了调用方便，统一`set`和`get`的调用方式，精简了API的书写。
 
@@ -22,7 +22,7 @@ npm install cz848/dateio#get
 
 ## 解析
 
-### 构造器 `dateio(input?: string | number | array | Date | DateIO)`
+### 构造器 `dateio(input?: String | Number | Array | Date | DateIO)`
 
 返回`DateIO`对象
 - 不带参数时返回当前日期和时间的`DateIO`对象
@@ -35,7 +35,10 @@ dateio();
 #### 传入日期字符串
 
 ```javascript
+dateio('2019-10-20');
 dateio('2019-10-20 15:20:45');
+dateio('2019-10-20T15:20:45Z');
+dateio('2020-01-28 10:04:33.555');
 ```
 
 #### 传入日期数组
@@ -67,144 +70,149 @@ dateio().clone();
 dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 ```
 
-## 取值/赋值
+## 取值
 
-### 年 `.Y()` 或 `.y(input?: number | numbers)`
+### 年 `.Y` 或 `.y`
 
-取得/设置日期的年份。
-- 不带参数时返回代表的年份
-- 带参数时返回被改变日期后的`DateIO`对象。下同。
-
-**注：**赋值行为与原生Date的`setFullYear`保持一致，既可以传入多个参数分别设置年、月、日，不同的是月份是从1开始。下同。
+取得日期的年份。大写返回四位字符串格式年份，小写返回原本的数值型。
 
 ```javascript
-dateio().Y(); // 2019
-dateio().y(); // 2019
-dateio('100').Y(); // 0100
-dateio('100').y(); // 100
-dateio().y(2000); // 被改变日期后的DateIO对象
-dateio().y(2000, 11, 15); // 被改变日期后的DateIO对象
+dateio().Y; // 2019
+dateio().y; // 2019
+dateio('100').Y; // 0100
+dateio('100').y; // 100
 ```
 
-### 月 `.M()` 或 `.m(input?: number | numbers)`
+### 月 `.M` 或 `.m`
 
-取得/设置日期的月份，从更符合日常习惯的1开始。大写返回有前导0的字符串格式的月份，小写返回数值型，下同。
+取得日期的月份，从更符合日常习惯的1开始。大写返回有前导0的字符串格式的月份，小写返回数值型，下同。
 
 ```javascript
-dateio().M(); // '05'
-dateio().m(); // 5
-dateio().m(10);
-dateio().m(10, 12);
+dateio().M; // '05'
+dateio().m; // 5
 ```
+### 月 `.Mo` 或 `.mo`
 
-### 日 `.D()` 或 `.d(input?: number)`
-
-取得/设置日期的天数。
+本地化的月份。小写时返回本地化的缩写月份，分别对应语言包中的`months`及`monthsShort`字段设置。
 
 ```javascript
-dateio().D(); // '08'
-dateio().d(); // 8
-dateio().d(15);
+dateio().Mo; // '五'
+dateio().mo; // 5
 ```
 
-### 星期 `.W()` 或 `.w()`
+### 日 `.D` 或 `.d`
 
-取得日期的星期几。
+取得日期的天数。
 
 ```javascript
-dateio().W(); // 星期一
-dateio().w(); // 1
+dateio().D; // '08'
+dateio().d; // 8
 ```
 
-### 时 `.H()` 或 `.h(input?: number | numbers)`
+### 星期 `.W` 或 `.w`
 
-取得/设置时间的小时数，24小时制。可以传入多个参数分别设置时、分、秒、毫秒，下同。
+取得日期的星期几。其中星期日为 0、星期六为 6。
 
 ```javascript
-dateio().H(); // '19'
-dateio().h(); // 19
-dateio().h(12);
-dateio().h(12, 23, 59, 100); // 分别设置时、分、秒、毫秒
+dateio().W; // 星期一
+dateio().w; // 1
 ```
 
-### 分 `.I()` 或 `.i(input?: number | numbers)`
+### 时 `.H` 或 `.h`
 
-取得/设置时间的分钟数。
+取得时间的小时数，24小时制。
 
 ```javascript
-dateio().I(); // '55'
-dateio().i(); // 55
-dateio().i(59);
-dateio().i(59, 59);
+dateio().H; // '09'
+dateio().h; // 9
 ```
 
-### 秒 `.S()` 或 `.s(input?: number | numbers)`
+### 分 `.I` 或 `.i`
 
-取得/设置时间的秒数。
+取得时间的分钟数。
 
 ```javascript
-dateio().S(); // '40'
-dateio().s(); // 40
-dateio().s(1);
+dateio().I; // '55'
+dateio().i; // 55
 ```
 
-### 毫秒 `.MS()` 或 `.ms(input?: number)`
+### 秒 `.S` 或 `.s`
 
-取得/设置时间的毫秒数。
+取得时间的秒数。
 
 ```javascript
-dateio().MS(); // '089'
-dateio().ms(); // 123
-dateio().ms(157);
-dateio().ms(576869);
+dateio().S; // '40'
+dateio().s; // 40
 ```
 
-### 时间段 `.A()` 或 `.a()`
+### 毫秒 `.MS` 或 `.ms`
+
+取得时间的毫秒数。
+
+```javascript
+dateio().MS; // '089'
+dateio().ms; // 123
+```
+
+### 时间段 `.A` 或 `.a`
 
 取得一天的上下午等时间段，默认分为四个时间段，可自定义。
 
 ```javascript
-dateio().A(); // 上午
-dateio().a(); // 晚上
+dateio().A; // 上午
+dateio().a; // 晚上
 ```
 
-### Unix 偏移量(毫秒) `.valueOf()` 或 `.u(input?: number)`
+### Unix 偏移量(毫秒) `.valueOf()` 或 `.u`
 
-取得/设置时间的Unix毫秒时间戳。
+取得时间的 Unix 偏移量(毫秒)。
 
 ```javascript
 dateio().valueOf(); // 1571553140345
-dateio().u(); // 1571553140345
-dateio().u(1571553140345);
+dateio().u; // 1571553140345
 ```
 
-### Unix 时间戳(秒) `.U(input?: number)`
+### Unix 时间戳(秒) `.U`
 
-取得/设置时间的Unix秒时间戳。**注：为了更符合实际场景，这里改为四舍五入取值**
+取得时间的Unix秒时间戳。**注：为了更符合实际场景，这里改为四舍五入取值**
 
 ```javascript
-dateio().U(); // 1571553140
-dateio(1571553140545).U(); // 1571553141
-dateio().U(1571553140);
+dateio().U; // 1571553140
+dateio(1571553140545).U; // 1571553141
 ```
 
-### 取值 `.get(unit: string)`
+### 取值 `.get(unit: String)`
 
 返回`DateIO`对象中相应的数值，对应上面的各种取值。
 
 ```javascript
 dateio().get('m');
 dateio().get('h');
+dateio().get('y');
+dateio().get('Y');
 ```
 
-### 赋值 `.set(unit: string, value: number)`
+### 赋值 `.set(unit: String, value: Number)`
 
-返回被赋值后的`DateIO`对象。
+返回被改变日期后的`DateIO`对象。
+
+其中设置星期几时，如果`w`给定的值是 0 到 6，则结果的日期将会在当前（星期日至星期六）的星期；如果超出范围，则它将会冒泡到其他星期。
+
+**注：**赋值行为可以传入多个参数分别设置不同的日期/时间段，不同的是月份是从1开始。
 
 ```javascript
 dateio().set('d', 1);
 dateio().set('m', 3);
 dateio().set('s', 30);
+dateio().set('y', 2015, 4, 3);
+dateio().set('m', 4, 3);
+dateio().set('h', 4, 3, 2, 1);
+
+dateio().set('w', 0);
+dateio().set('w', -7); // 上个星期日 (0 - 7)
+dateio().set('w', 7); // 下个星期日 (0 + 7)
+dateio().set('w', 10); // 下个星期三 (3 + 7)
+dateio().set('w', 24); // 从现在起第 3 个星期三 (3 + 7 + 7 + 7)
 ```
 
 ## 操作
@@ -219,9 +227,9 @@ dateio('2019-10-20')
   .toString(); // Fri Sep 20 2019 22:30:00 GMT+0800 (中国标准时间)
 ```
 
-### 加法 `.add(value: number, unit?: string)`
+### 加法 `.add(value: Number, unit?: String)`
 
-对日期进行+-运算，默认精确到毫秒，可传小数（年和月的小数部分分别按365天和30天计算，有一定误差）。
+对日期进行+-运算，默认精确到毫秒，可传小数。年份会被转换到月份，然后四舍五入到最接近的整数月，月份直接四舍五入到最接近的整数月。
 - input: `7d`, `-1m`, `10y`, `5.5h`等或数字。
 - unit: `y`, `m`, `d`, `w`, `h`, `i`, `s`, `ms`。
 
@@ -229,11 +237,16 @@ dateio('2019-10-20')
 dateio().add(7, 'd');
 dateio().add('7d');
 dateio().add('7.5d');
+dateio().add('7.33m');
+dateio().add('7y');
+dateio().add('0.7y') === dateio().add(8, 'm'); // 0.7 * 12 = 8.4 = 8
 ```
 
-### 减法 `.subtract(value: number, unit?: string)`
+注意，为了使操作 dateio().add('-0.5m') 和 dateio().subtract('0.5m') 等价，-0.5、-1.5、-2.5 等都向下舍入。
 
-参数同add，也可以用add，传入负数。
+### 减法 `.subtract(value: Number, unit?: String)`
+
+参数同add，也可以用add，传入负数。可传小数，年份会被转换到月份，然后四舍五入到最接近的整数，月份会直接四舍五入到最接近的整数。
 
 ```javascript
 dateio().subtract(7, 'y');
@@ -244,7 +257,7 @@ dateio().add('-7d');
 dateio().add('-7.5h');
 ```
 
-### 开始于 `.startOf(unit?: string)`
+### 开始于 `.startOf(unit?: String)`
 
 对日期进行从特定时段开始的操作。
 
@@ -255,7 +268,7 @@ dateio().startOf('d'); // '2020-02-14 00:00:00'
 dateio().startOf('h'); // '2020-02-14 14:00:00'
 ```
 
-### 结束于 `.endOf(unit?: string)`
+### 结束于 `.endOf(unit?: String)`
 
 对日期进行结束于特定时段的操作。
 
@@ -268,7 +281,7 @@ dateio().endOf('h'); // '2020-02-14 14:59:59'
 
 ## 显示
 
-### 格式化 `.format(formats?: string)`
+### 格式化 `.format(formats?: String)`
 
 ```javascript
 dateio().format(); // '2019-10-20 08:02:17'
@@ -278,9 +291,12 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 
 | 格式化字串   | 输出             | 描述               |
 | ---------  | --------------- | -------------------|
-| `Y` 或 `y` | 2018            | 年份                |
+| `Y`　　　　 | 2018            | 年份，四位，字符串    |
+| `y`　　　　 | 2018            | 年份                |
 | `m`        | 1-12            | 月份                |
 | `M`        | 01-12           | 月份，带前导0，字符串  |
+| `Mo`       | 一-十二          | 本地化的月份         |
+| `mo`       | 1-12            | 本地化的缩写月份      |
 | `d`        | 1-31            | 日                  |
 | `D`        | 01-31           | 日，带前导0，字符串    |
 | `w`        | 0-6             | 星期几，从0开始       |
@@ -293,13 +309,14 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `S`        | 00-59           | 秒，带前导0，字符串    |
 | `ms`       | 0-999           | 毫秒                |
 | `MS`       | 000-999         | 毫秒，带前导0，字符串  |
-| `A` 或 `a` | 凌晨 上午 下午 晚上 | 时间段              |
+| `A`        | 凌晨 上午 下午 晚上 | 本地化大写的时间段   |
+| `a`        | 凌晨 上午 下午 晚上 | 时间段             |
 | `u`        | 0-1571136267050 | unix 偏移量(毫秒)   |
 | `U`        | 0-1542759768    | unix 时间戳(秒)     |
 
-### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
+### 比较 `.diff(input: Date like | DateIO, unit?: String, isFloat?: Boolean)`
 
-返回两个日期的差值，精确到毫秒
+返回两个日期的差值，精确到毫秒。支持所有可以被转化为日期的参数。
 
 ```javascript
 const date1 = dateio('2019-10-20');
@@ -318,8 +335,18 @@ dateio('2019-10-20').daysInMonth(); // 31
 
 ### 转换成Date对象 `.toDate()`
 
+拿到Date对象之后就可以使用原生Date的各种方法了。
+
 ```javascript
 dateio('2019-10-20').toDate();
+```
+
+比如：
+
+```javascript
+dateio('2019-10-20').toDate().toLocaleString();
+dateio('2019-10-20').toDate().toISOString();
+dateio('2019-10-20').toDate().toUTCString();
 ```
 
 ### 转换成字符串 `.toString()`
@@ -328,17 +355,11 @@ dateio('2019-10-20').toDate();
 dateio('2019-10-20').toString(); // Sun Oct 20 2019 00:00:00 GMT+0800 (中国标准时间)
 ```
 
-### 转换成本地化的字符串 `.toLocaleString()`
-
-```javascript
-dateio('2019-10-20').toLocaleString(); // 2019/10/20 上午12:00:00
-```
-
 ## 查询
 
-### 是否相同 `.isSame(compared: Date like | DateIO, unit?: string)`
+### 是否相同 `.isSame(compared: Date like | DateIO, unit?: String)`
 
-比较两个同格式的日期是否相同，默认精确到毫秒。
+比较两个同格式的日期是否相同，默认精确到毫秒。支持所有可以被转化为日期的参数。
 
 ```javascript
 dateio().isSame(dateio()); // true
@@ -346,6 +367,7 @@ dateio().isSame(new Date, 'y'); // true
 dateio('2020-1-4').isSame(dateio('2019-1-4'), 'm'); // false
 dateio().isSame(1571587652864, 'm');
 dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-5 10:04:21'), 'h') // false
+dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-6 10:04:21'), 'w') // true
 ```
 
 ### 是否为闰年 `.isLeapYear()`
@@ -366,7 +388,7 @@ dateio.locale({
   months: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'],
   monthsShort: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
   // 时间段，可根据传入数组的长度均分一天中的时间
-  interval: ['凌晨', '上午', '下午', '晚上'],
+  meridiem: ['凌晨', '上午', '下午', '晚上'],
   // 星期
   weekdays: ['日', '一', '二', '三', '四', '五', '六'],
 });
@@ -375,7 +397,21 @@ dateio.locale({
 dateio.locale({
   months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  interval: ['a.m.', 'p.m.'],
+  meridiem: ['a.m.', 'p.m.'],
   weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+});
+```
+
+`meridiem`也可以传入函数，它接收日期的小时和分钟参数。
+
+```javascript
+dateio.locale({
+  meridiem(h, i) {
+    if (h >= 0 && h < 5) return '凌晨';
+    if ((h >= 5 && h < 11) || (h === 11 && i <= 30)) return '上午';
+    if ((h === 11 && i > 30) || (h === 12 && i <= 30)) return '中午';
+    if ((h === 12 && i > 30) || (h > 12 && h < 19)) return '下午';
+    return '晚上';
+  },
 });
 ```
