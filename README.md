@@ -22,7 +22,7 @@ npm install cz848/dateio#get
 
 ## 解析
 
-### 构造器 `dateio(input?: string | number | array | Date | DateIO)`
+### 构造器 `dateio(input?: String | Number | Array | Date | DateIO)`
 
 返回`DateIO`对象
 - 不带参数时返回当前日期和时间的`DateIO`对象
@@ -72,7 +72,7 @@ dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 
 ## 取值/赋值
 
-### 年 `.Y()` 或 `.y(input?: number | numbers)`
+### 年 `.Y()` 或 `.y(input?: Number | Numbers)`
 
 取得/设置日期的年份。
 - 不带参数时返回代表的年份
@@ -89,7 +89,7 @@ dateio().y(2000); // 被改变年份后的DateIO对象
 dateio().y(2000, 11, 15); // 被改变日期后的DateIO对象
 ```
 
-### 月 `.M()` 或 `.m(input?: number | numbers)`
+### 月 `.M()` 或 `.m(input?: Number | Numbers)`
 
 取得/设置日期的月份，从更符合日常习惯的1开始。大写返回有前导0的字符串格式的月份，小写返回数值型，下同。
 
@@ -100,7 +100,7 @@ dateio().m(10);
 dateio().m(10, 12);
 ```
 
-### 日 `.D()` 或 `.d(input?: number)`
+### 日 `.D()` 或 `.d(input?: Number)`
 
 取得/设置日期的天数。
 
@@ -110,7 +110,7 @@ dateio().d(); // 8
 dateio().d(15);
 ```
 
-### 星期 `.W()` 或 `.w(input?: number)`
+### 星期 `.W()` 或 `.w(input?: Number)`
 
 取得/设置日期的星期几。其中星期日为 0、星期六为 6。
 
@@ -120,13 +120,13 @@ dateio().d(15);
 dateio().W(); // 星期一
 dateio().w(); // 1
 dateio().w(0);
-moment().w(-7); // 上个星期日 (0 - 7)
-moment().w(7); // 下个星期日 (0 + 7)
-moment().w(10); // 下个星期三 (3 + 7)
-moment().w(24); // 从现在起第 3 个星期三 (3 + 7 + 7 + 7)
+dateio().w(-7); // 上个星期日 (0 - 7)
+dateio().w(7); // 下个星期日 (0 + 7)
+dateio().w(10); // 下个星期三 (3 + 7)
+dateio().w(24); // 从现在起第 3 个星期三 (3 + 7 + 7 + 7)
 ```
 
-### 时 `.H()` 或 `.h(input?: number | numbers)`
+### 时 `.H()` 或 `.h(input?: Number | Numbers)`
 
 取得/设置时间的小时数，24小时制。可以传入多个参数分别设置时、分、秒、毫秒，下同。
 
@@ -137,7 +137,7 @@ dateio().h(12);
 dateio().h(12, 23, 59, 100); // 分别设置时、分、秒、毫秒
 ```
 
-### 分 `.I()` 或 `.i(input?: number | numbers)`
+### 分 `.I()` 或 `.i(input?: Number | Numbers)`
 
 取得/设置时间的分钟数。
 
@@ -148,7 +148,7 @@ dateio().i(59);
 dateio().i(59, 59);
 ```
 
-### 秒 `.S()` 或 `.s(input?: number | numbers)`
+### 秒 `.S()` 或 `.s(input?: Number | Numbers)`
 
 取得/设置时间的秒数。
 
@@ -159,7 +159,7 @@ dateio().s(1);
 dateio().s(1, 123);
 ```
 
-### 毫秒 `.MS()` 或 `.ms(input?: number)`
+### 毫秒 `.MS()` 或 `.ms(input?: Number)`
 
 取得/设置时间的毫秒数。
 
@@ -179,7 +179,7 @@ dateio().A(); // 上午
 dateio().a(); // 晚上
 ```
 
-### Unix 偏移量(毫秒) `.valueOf()` 或 `.u(input?: number)`
+### Unix 偏移量(毫秒) `.valueOf()` 或 `.u(input?: Number)`
 
 取得/设置时间的 Unix 偏移量(毫秒)。
 
@@ -189,7 +189,7 @@ dateio().u(); // 1571553140345
 dateio().u(1571553140345);
 ```
 
-### Unix 时间戳(秒) `.U(input?: number)`
+### Unix 时间戳(秒) `.U(input?: Number)`
 
 取得/设置时间的Unix秒时间戳。**注：为了更符合实际场景，这里改为四舍五入取值**
 
@@ -199,7 +199,7 @@ dateio(1571553140545).U(); // 1571553141
 dateio().U(1571553140);
 ```
 
-### 取值 `.get(unit: string)`
+### 取值 `.get(unit: String)`
 
 返回`DateIO`对象中相应的数值，对应上面的各种取值。
 
@@ -210,7 +210,7 @@ dateio().get('y');
 dateio().get('Y');
 ```
 
-### 赋值 `.set(unit: string, value: number)`
+### 赋值 `.set(unit: String, value: Number)`
 
 返回被改变日期后的`DateIO`对象。
 
@@ -233,7 +233,7 @@ dateio('2019-10-20')
   .toString(); // Fri Sep 20 2019 22:30:00 GMT+0800 (中国标准时间)
 ```
 
-### 加法 `.add(value: number, unit?: string)`
+### 加法 `.add(value: Number, unit?: String)`
 
 对日期进行+-运算，默认精确到毫秒，可传小数。年份会被转换到月份，然后四舍五入到最接近的整数月，月份直接四舍五入到最接近的整数月。
 - input: `7d`, `-1m`, `10y`, `5.5h`等或数字。
@@ -250,7 +250,7 @@ dateio().add('0.7y') === dateio().add(8, 'm'); // 0.7 * 12 = 8.4 = 8
 
 注意，为了使操作 dateio().add('-0.5m') 和 dateio().subtract('0.5m') 等价，-0.5、-1.5、-2.5 等都向下舍入。
 
-### 减法 `.subtract(value: number, unit?: string)`
+### 减法 `.subtract(value: Number, unit?: String)`
 
 参数同add，也可以用add，传入负数。可传小数，年份会被转换到月份，然后四舍五入到最接近的整数，月份会直接四舍五入到最接近的整数。
 
@@ -263,7 +263,7 @@ dateio().add('-7d');
 dateio().add('-7.5h');
 ```
 
-### 开始于 `.startOf(unit?: string)`
+### 开始于 `.startOf(unit?: String)`
 
 对日期进行从特定时段开始的操作。
 
@@ -274,7 +274,7 @@ dateio().startOf('d'); // '2020-02-14 00:00:00'
 dateio().startOf('h'); // '2020-02-14 14:00:00'
 ```
 
-### 结束于 `.endOf(unit?: string)`
+### 结束于 `.endOf(unit?: String)`
 
 对日期进行结束于特定时段的操作。
 
@@ -287,7 +287,7 @@ dateio().endOf('h'); // '2020-02-14 14:59:59'
 
 ## 显示
 
-### 格式化 `.format(formats?: string)`
+### 格式化 `.format(formats?: String)`
 
 ```javascript
 dateio().format(); // '2019-10-20 08:02:17'
@@ -297,7 +297,7 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 
 | 格式化字串   | 输出             | 描述               |
 | ---------  | --------------- | -------------------|
-| `Y`　　　　 | 2018            | 年份，四位，字符串    |
+| `Y`　　　　 | '2018'          | 年份，四位，字符串    |
 | `y`　　　　 | 2018            | 年份                |
 | `m`        | 1-12            | 月份                |
 | `M`        | 01-12           | 月份，带前导0，字符串  |
@@ -313,11 +313,12 @@ dateio().format('H:i:s a'); // '07:28:30 上午'
 | `S`        | 00-59           | 秒，带前导0，字符串    |
 | `ms`       | 0-999           | 毫秒                |
 | `MS`       | 000-999         | 毫秒，带前导0，字符串  |
-| `A` 或 `a` | 凌晨 上午 下午 晚上 | 时间段              |
+| `a`        | 凌晨 上午 下午 晚上 | 时间段              |
+| `A`        | 凌晨 上午 下午 晚上 | 本地化大写的时间段    |
 | `u`        | 0-1571136267050 | unix 偏移量(毫秒)   |
 | `U`        | 0-1542759768    | unix 时间戳(秒)     |
 
-### 比较 `.diff(input: Date like | DateIO, unit?: string, isFloat?: boolean)`
+### 比较 `.diff(input: Date like | DateIO, unit?: String, isFloat?: Boolean)`
 
 返回两个日期的差值，精确到毫秒。支持所有可以被转化为日期的参数。
 
@@ -360,7 +361,7 @@ dateio('2019-10-20').toString(); // Sun Oct 20 2019 00:00:00 GMT+0800 (中国标
 
 ## 查询
 
-### 是否相同 `.isSame(compared: Date like | DateIO, unit?: string)`
+### 是否相同 `.isSame(compared: Date like | DateIO, unit?: String)`
 
 比较两个同格式的日期是否相同，默认精确到毫秒。支持所有可以被转化为日期的参数。
 
