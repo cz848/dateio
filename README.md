@@ -1,6 +1,6 @@
 # dateio
 
-　　这是一个轻量级、无依赖的日期处理类库，用于日期的取值、格式化显示及计算等，主要针对于小程序这种对体积有一定限制的环境使用，当然也可以用于其它支持ES6语法的环境。
+　　这是一个轻量级、无依赖的日期处理类库，用于日期的取值、格式化显示及计算等，主要针对于对体积有一定限制，并且支持ES6语法的环境。
 
 　　API参考了 `moment.js` 和 `day.js`，但是省去了很多平时用不到或很少使用的API，只保留最有用的一些功能（会根据需要增加）。这样也大幅减小了体积。并且为了调用方便，统一`set`和`get`的调用方式，精简了API的书写。
 
@@ -18,7 +18,7 @@ npm install cz848/dateio#get --save
 
 ## 解析
 
-### 构造器 `dateio(input?: string | number | array | Date | DateIO)`
+### 构造器 `dateio(input?: String | Number | Array | Date | DateIO)`
 
 返回`DateIO`对象
 - 不带参数时返回当前日期和时间的`DateIO`对象
@@ -65,7 +65,7 @@ dateio(1568781876406);
 dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 ```
 
-## 取值 `.get(unit: string)`
+## 取值 `.get(unit: String)`
 
 返回`DateIO`对象中相应的各种取值。
 
@@ -101,7 +101,7 @@ dateio().get('Y');
 
 ## 显示
 
-### 格式化 `.format(formats?: string)`
+### 格式化 `.format(formats?: String)`
 
 以`Y-M-D H:I:S`此类的格式显示日期字串，对应的每个日期单位参考上表。
 
