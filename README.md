@@ -61,6 +61,12 @@ dateio(new Date(2019, 10, 20));
 dateio(1568781876406);
 ```
 
+#### 传入 Unix 偏移量(秒)
+
+```javascript
+dateio.U(1568781876);
+```
+
 **注：**`DateIO`对象为类Date对象，可以直接参与运算，不用先转换为Date对象再操作，如：
 
 ```javascript
