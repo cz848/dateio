@@ -61,6 +61,15 @@ dateio(new Date(2019, 10, 20));
 dateio(1568781876406);
 ```
 
+**注：**`DateIO`对象为类Date对象，可以直接参与运算，不用先转换为Date对象再操作，如：
+
+```javascript
+const nowTimestamp = +dateio();
+
+const startTime = 1624857544356;
+const diff = startTime - dateio();
+```
+
 ### Clone `.clone()` 或 `dateio(original: DateIO)`
 
 复制当前对象，并返回`DateIO`对象的新实例。
@@ -335,7 +344,7 @@ dateio('2019-10-20').daysInMonth(); // 31
 
 ### 转换成Date对象 `.toDate()`
 
-拿到Date对象之后就可以使用原生Date的各种方法了。
+转成Date对象之后就可以使用原生Date的各种方法了。
 
 ```javascript
 dateio('2019-10-20').toDate();
