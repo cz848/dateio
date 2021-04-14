@@ -80,6 +80,8 @@ test('Get Unix timestamp', () => {
   expect(dateio().u(1).valueOf()).toBe(moment(1).valueOf());
   expect(dateio().U(1546).valueOf()).toBe(moment.unix(1546).valueOf());
   expect(dateio().U(1546345).valueOf()).toBe(dateio(1546345000).U() * 1000);
+  expect(dateio.U(154633).valueOf()).toBe(moment.unix(154633).valueOf());
+  expect(dateio.U(1546345789).valueOf()).toBe(dateio(1546345789000).U() * 1000);
 });
 
 test('Get unknown things', () => {
