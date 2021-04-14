@@ -88,6 +88,7 @@ describe('Constructor', () => {
     expect(+dateio([2018, 5, 1, 13, 52, 44])).toBe(+moment([2018, 4, 1, 13, 52, 44]));
     expect(+dateio([2018])).toBe(+moment([2018]));
     expect(+dateio(2018)).toBe(+moment(2018));
+    expect(+dateio.U(2018)).toBe(+moment(2018000));
     expect(+dateio([2018, 2])).toBe(+moment([2018, 1]));
     expect(+dateio(2018, 2, 1)).toBe(+moment(2018));
     expect(+dateio([1987, 6])).toBe(+moment([1987, 5]));
@@ -110,5 +111,6 @@ describe('Constructor', () => {
   test('Unix Timestamp Number (milliseconds)', () => {
     const timestamp = 1523520536000;
     expect(dateio(timestamp).valueOf()).toBe(moment(timestamp).valueOf());
+    expect(dateio.U(timestamp / 1000).valueOf()).toBe(moment(timestamp).valueOf());
   });
 });

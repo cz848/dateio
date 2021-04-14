@@ -53,5 +53,7 @@ class DateIO {
 const dateio = input => new DateIO(input);
 
 dateio.prototype = DateIO.prototype;
+// 用Unix秒时间戳设置时间
+dateio.U = input => dateio(input * 1e3);
 
 export default dateio;
