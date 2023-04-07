@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /**
  * 统一处理日期或格式化输出
  * Author: Tyler.Chao
@@ -49,14 +50,13 @@ const monthDiff = (a, b) => {
 
 // 转换为可识别的日期格式
 const toDate = input => {
-  let date = input;
-  if (!isDefined(input)) date = Date.now();
-  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) date = input.replace(/-/g, '/');
-  else if (Array.isArray(input)) date = new Date(input.splice(0, 3)).setHours(...input.concat(0));
-  return new Date(date);
+  if (!isDefined(input)) return new Date();
+  if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
+  else if (Array.isArray(input)) input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+  return new Date(input);
 };
 
-// 内部调用的get/set方法
+// 调用Date内部的get/set方法
 const get = (that, type) => that.$date[`get${type}`]() + Number(type === 'Month');
 const set = (that, type, input) => {
   // 输入为非数字直接返回此对象
@@ -68,6 +68,10 @@ const set = (that, type, input) => {
   // 得到最终结果
   if (type === 'Day') that.add(input[0] - get(that, type), 'd');
   else that.$date[`set${type}`](...input);
+  // 修正计算月份的误差，同步moment.js
+  if (type === 'Month' && input.length === 1 && get(that, type) > (input[0] % 12) + (input[0] < 0 ? 13 : 1)) {
+    that.add(`-${that.d()}d`);
+  }
   return that;
 };
 const gs = (that, type, input) => {
@@ -205,12 +209,12 @@ class DateIO {
   }
 
   // 获取以上格式的日期，每个unit对应其中一种格式
-  get(unit = '') {
-    return getUnitRegExp.test(unit) ? this[unit]() : undefined;
+  get(unit) {
+    return getUnitRegExp.test(unit) ? this[unit]() : null;
   }
 
   // 设置以上格式的日期
-  set(unit = '', ...input) {
+  set(unit, ...input) {
     return setUnitRegExp.test(unit) ? this[unit](...input) : this;
   }
 

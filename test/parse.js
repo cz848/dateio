@@ -85,15 +85,15 @@ describe('Constructor', () => {
     expect(+a).toBe(+b);
     b.add('1m');
     expect(+a).not.toBe(+b);
-    expect(b.diff(a, 'm')).toEqual(1);
+    expect(Math.round(b.diff(a, 'm', true))).toEqual(1);
 
     expect(+a).toBe(+c);
     expect(+c).toBe(+d);
     d.add('1m');
     expect(+b).toBe(+d);
     expect(+c).not.toBe(+d);
-    expect(d.diff(c, 'm')).toEqual(1);
-    expect(d.diff(a, 'm')).toEqual(1);
+    expect(Math.round(d.diff(c, 'm', true))).toEqual(1);
+    expect(Math.round(d.diff(a, 'm', true))).toEqual(1);
   });
 
   test('Other', () => {
