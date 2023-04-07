@@ -85,14 +85,14 @@ test('Get Unix timestamp', () => {
 });
 
 test('Get unknown things', () => {
-  expect(dateio().get('Unknown String')).toBeUndefined();
-  expect(dateio().get('')).toBeUndefined();
-  expect(dateio().get(undefined)).toBeUndefined();
-  expect(dateio().get(null)).toBeUndefined();
-  expect(dateio().get(false)).toBeUndefined();
-  expect(dateio().get(NaN)).toBeUndefined();
-  expect(dateio().get()).toBeUndefined();
-  expect(dateio().get(0)).toBeUndefined();
+  expect(dateio().get('Unknown String')).toBeNull();
+  expect(dateio().get('')).toBeNull();
+  expect(dateio().get(undefined)).toBeNull();
+  expect(dateio().get(null)).toBeNull();
+  expect(dateio().get(false)).toBeNull();
+  expect(dateio().get(NaN)).toBeNull();
+  expect(dateio().get()).toBeNull();
+  expect(dateio().get(0)).toBeNull();
 });
 
 test('Set Year', () => {
@@ -105,8 +105,14 @@ test('Set Year', () => {
 test('Set Month', () => {
   expect(dateio().set('m', 11).valueOf()).toBe(moment().set('month', 10).valueOf());
   expect(dateio().m(1).valueOf()).toBe(moment().month(0).valueOf());
-  expect(dateio().m(2).valueOf()).toBe(new Date().setMonth(1));
+  expect(dateio('2023-1-31').m(1).valueOf()).toBe(moment('2023-1-31').month(0).valueOf());
+  const date = '2023-3-31';
+  expect(dateio(date).m(1).valueOf()).toBe(moment(date).month(0).valueOf());
+  expect(dateio(date).m(2).valueOf()).toBe(new Date(date).setMonth(1, 28));
+  const days = dateio().daysInMonth();
+  expect(dateio().m(2, days).valueOf()).toBe(new Date().setMonth(1, days));
   expect(dateio().m(11, 31).valueOf()).toBe(new Date().setMonth(10, 31));
+  expect(dateio().m(-1, 0).valueOf()).toBe(new Date().setMonth(-2, 0));
 });
 
 test('Set Day', () => {
