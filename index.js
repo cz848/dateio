@@ -51,8 +51,12 @@ const monthDiff = (a, b) => {
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!isDefined(input)) return new Date();
-  if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
-  else if (Array.isArray(input)) input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+  if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) {
+    if (/^\d{4}$/.test(input)) input += '/';
+    else input = input.replace(/-/g, '/');
+  } else if (Array.isArray(input)) {
+    input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+  }
   return new Date(input);
 };
 
