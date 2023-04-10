@@ -303,6 +303,15 @@ class DateIO {
     return this.m(this.m() + 1, 0).d();
   }
 
+  // 获取当前日期是当年的第几天
+  // 或者设置日期为当年的第几天
+  dayOfYear(number) {
+    if (!arguments.length) return this.diff(`${this.y()}/1/1`, 'd') + 1;
+    // eslint-disable-next-line no-restricted-globals
+    if (!isNaN(number)) return this.m(1, +number);
+    return this;
+  }
+
   // 比较两个日期是否具有相同的年/月/日/周/时/分/秒，默认精确比较到毫秒
   isSame(input, unit) {
     return +this.clone().startOf(unit) === +new DateIO(input).startOf(unit);

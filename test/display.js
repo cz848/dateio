@@ -171,6 +171,25 @@ describe('Timestamp', () => {
 test('Days in Month', () => {
   expect(dateio().daysInMonth()).toBe(moment().daysInMonth());
   expect(dateio('2014-01-31').daysInMonth()).toBe(moment('20140131').daysInMonth());
+  expect(dateio('2020-02-1').daysInMonth()).toBe(moment('20200201').daysInMonth());
+});
+
+test('Day of Year', () => {
+  expect(dateio('2023-1-12').dayOfYear()).toBe(moment('20230112').dayOfYear());
+  expect(dateio().dayOfYear()).toBe(moment().dayOfYear());
+  expect(dateio('2014-04-21').dayOfYear()).toBe(moment('20140421').dayOfYear());
+  expect(+dateio().dayOfYear(-10)).toBe(+moment().dayOfYear(-10));
+  expect(+dateio().dayOfYear(0)).toBe(+moment().dayOfYear(0));
+  expect(+dateio().dayOfYear(1)).toBe(+moment().dayOfYear(1));
+  expect(+dateio().dayOfYear(134)).toBe(+moment().dayOfYear(134));
+  expect(+dateio().dayOfYear(365)).toBe(+moment().dayOfYear(365));
+  expect(+dateio().dayOfYear(366)).toBe(+moment().dayOfYear(366));
+  expect(+dateio().dayOfYear(367)).toBe(+moment().dayOfYear(367));
+  expect(+dateio().dayOfYear(420)).toBe(+moment().dayOfYear(420));
+  expect(+dateio().dayOfYear('')).toBe(+moment().dayOfYear(''));
+  expect(+dateio().dayOfYear(false)).toBe(+moment().dayOfYear(false));
+  expect(+dateio().dayOfYear('none')).toBe(+moment().dayOfYear('none'));
+  expect(+dateio().dayOfYear('string')).toBe(+moment().dayOfYear('other'));
 });
 
 test('As Javascript Date -> toDate', () => {
