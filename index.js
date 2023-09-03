@@ -55,7 +55,7 @@ const toDate = input => {
     if (/^\d{4}$/.test(input)) input += '/';
     else input = input.replace(/-/g, '/');
   } else if (Array.isArray(input)) {
-    input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+    input = new Date(input.splice(0, 3).join('/')).setHours(...input.concat(0));
   }
   return new Date(input);
 };
