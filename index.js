@@ -10,7 +10,7 @@ class DateIO {
   constructor(input) {
     if ([null, undefined].indexOf(input) > -1) input = Date.now();
     else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
-    else if (Array.isArray(input)) input = new Date(input.splice(0, 3)).setHours(...input.concat(0));
+    else if (Array.isArray(input)) input = new Date(input.splice(0, 3).join('/')).setHours(...input.concat(0));
     this.$date = new Date(input);
   }
 
