@@ -9,7 +9,7 @@
 const zeroFill = (number, targetLength) => `00${number}`.slice(-targetLength || -2);
 
 // 值是否定义
-const isDefined = value => [null, undefined].indexOf(value) < 0;
+const isDefined = value => value != null;
 
 // 匹配不同方法的正则
 const formatsRegExp = /MS|ms|[YMDWHISAUymdwhisau]/g;
@@ -51,13 +51,13 @@ const monthDiff = (a, b) => {
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!isDefined(input)) return new Date();
-  if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
-  else if (Array.isArray(input)) input = new Date(input.splice(0, 3).join('/')).setHours(...input.concat(0));
+  if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/^(\d{4})$/, '$1/').replace(/-/g, '/');
+  else if (Array.isArray(input)) input = new Date(input.slice(0, 3).join('/')).setHours(...input.slice(3), 0);
   return new Date(input);
 };
 
 // 调用Date内部的get/set方法
-const get = (that, type) => that.$date[`get${type}`]() + Number(type === 'Month');
+const get = (that, type) => that.$date[`get${type}`]() + (type === 'Month');
 const set = (that, type, input) => {
   // 输入为非数字直接返回此对象
   // eslint-disable-next-line no-restricted-globals
@@ -205,7 +205,7 @@ class DateIO {
   // Unix 时间戳 (秒)
   // 0...1542759768
   U(input) {
-    return isDefined(input) ? this.init(input * 1000) : Math.round(this / 1000);
+    return isDefined(input) ? this.init(input * 1e3) : Math.round(this / 1e3);
   }
 
   // 获取以上格式的日期，每个unit对应其中一种格式
@@ -219,7 +219,7 @@ class DateIO {
   }
 
   toDate() {
-    return this.$date;
+    return new Date(+this);
   }
 
   toString() {
@@ -227,7 +227,7 @@ class DateIO {
   }
 
   valueOf() {
-    return this.$date.valueOf();
+    return +this.$date;
   }
 
   clone() {
@@ -280,8 +280,8 @@ class DateIO {
 
     const [, addend, u = unit || 'ms'] = pattern;
     // 年月转化为月，并四舍五入
-    if (/^[ym]$/.test(u)) return this.m(this.m() + Number((addend * unitStep[u]).toFixed(0)));
-    return this.init(addend * (unitStep[u] || 0) + this.valueOf());
+    if (/^[ym]$/.test(u)) return this.m(this.m() + +(addend * unitStep[u]).toFixed(0));
+    return this.init(addend * (unitStep[u] || 0) + this);
   }
 
   subtract(input, unit) {
@@ -296,7 +296,15 @@ class DateIO {
 
   // 获取某月有多少天
   daysInMonth() {
-    return this.m(this.m() + 1, 0).d();
+    return this.clone().m(this.m() + 1, 0).d();
+  }
+
+  // 获取当前日期是当年的第几天
+  // 或者设置日期为当年的第几天
+  dayOfYear(number) {
+    if (!isDefined(number)) return this.diff(`${this.y()}/1/1`, 'd') + 1;
+    // eslint-disable-next-line no-restricted-globals
+    return isNaN(number) ? this : this.m(1, +number);
   }
 
   // 比较两个日期是否具有相同的年/月/日/周/时/分/秒，默认精确比较到毫秒
