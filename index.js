@@ -8,9 +8,9 @@
 class DateIO {
   // 转换为可识别的日期格式
   constructor(input) {
-    if ([null, undefined].indexOf(input) > -1) input = Date.now();
-    else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
-    else if (Array.isArray(input)) input = new Date(input.splice(0, 3).join('/')).setHours(...input.concat(0));
+    if (input == null) input = Date.now();
+    else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/^(\d{4})$/, '$1/').replace(/-/g, '/');
+    else if (Array.isArray(input)) input = new Date(input.slice(0, 3).join('/')).setHours(...input.slice(3), 0);
     this.$date = new Date(input);
   }
 
@@ -18,13 +18,14 @@ class DateIO {
   get(unit) {
     if (!unit) return;
     const date = this.$date;
+    if (isNaN(date)) return undefined;
     let value;
     if (/^[wu]$/i.test(unit)) {
       value = {
         w: date.getDay(),
         W: '日一二三四五六'[date.getDay()],
         u: +date,
-        U: Math.round(date / 1000),
+        U: Math.round(date / 1e3),
       }[unit];
     } else {
       // 转换成中国时区并输出'2019-10-10T15:10:22:123Z'的形式，再解析出所需要的数值
@@ -38,7 +39,7 @@ class DateIO {
 
   // 利用格式化串格式化日期
   format(formats) {
-    return String(formats || 'Y-M-D H:I:S').replace(/MS|ms|[YMDWHISUymdwhisu]/g, unit => this.get(unit));
+    return isNaN(this) ? '' : String(formats || 'Y-M-D H:I:S').replace(/MS|ms|[YMDWHISUymdwhisu]/g, unit => this.get(unit));
   }
 
   toString() {
