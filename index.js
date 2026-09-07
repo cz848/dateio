@@ -20,7 +20,7 @@ const unitStep = {
   i: 6e4,
   h: 36e5,
   d: 864e5,
-  w: 864e5 * 7,
+  w: 6048e5,
   m: 1,
   y: 12,
 };
@@ -59,8 +59,8 @@ const monthDiff = (a, b) => {
 // 转换为可识别的日期格式
 const toDate = input => {
   if (!isDefined(input)) input = Date.now();
-  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/-/g, '/');
-  else if (Array.isArray(input)) input = new Date(input.splice(0, 3).join('/')).setHours(...input.concat(0));
+  else if (typeof input === 'string' && !/T.+(?:Z$)?/i.test(input)) input = input.replace(/^(\d{4})$/, '$1/').replace(/-/g, '/');
+  else if (Array.isArray(input)) input = new Date(input.slice(0, 3).join('/')).setHours(...input.slice(3), 0);
   return new Date(input);
 };
 
@@ -101,19 +101,19 @@ class DateIO {
     this.u = +date;
     // 秒时间戳 (unix格式)
     // 0...1542759768
-    this.U = Math.round(this.u / 1000);
+    this.U = Math.round(this.u / 1e3);
     return this;
   }
 
   get(unit = '') {
-    return getUnitRegExp.test(unit) ? this[unit] : undefined;
+    return getUnitRegExp.test(unit) ? this[unit] : void 0;
   }
 
   set(unit = '', a, b, c, d) {
     // 遇到非法单位或值直接返回此对象
     if (!setUnitRegExp.test(unit) || !isDefined(a) || isNaN(a)) return this;
     if (unit === 'w') return this.add(a - this.w, 'd');
-    if (/u/i.test(unit)) return this.init(a * (unit === 'U' ? 1000 : 1));
+    if (/u/i.test(unit)) return this.init(a * (unit === 'U' ? 1e3 : 1));
     // 处理月份，设置的时候需要-1
     if (unit === 'y' && (b || b === 0)) b -= 1;
     else if (unit === 'm') a -= 1;
@@ -122,7 +122,7 @@ class DateIO {
   }
 
   toDate() {
-    return this.$date;
+    return new Date(+this);
   }
 
   toString() {
@@ -144,8 +144,7 @@ class DateIO {
 
   // 开始于，默认ms
   startOf(unit, isEndOf) {
-    let formats = 'y m d h i s';
-    formats = formats.slice(0, formats.indexOf(unit === 'w' ? 'd' : unit) + 1);
+    const formats = 'y m d h i s'.slice(0, 'y m d h i s'.indexOf(unit === 'w' ? 'd' : unit) + 1);
     if (!formats) return this;
     if (unit === 'w') this.set('w', isEndOf ? 6 : 0);
     const dates = this.format(formats).split(' ');
@@ -171,7 +170,7 @@ class DateIO {
     if (/^[ym]$/.test(unit)) diff = monthDiff(this, that) / unitStep[unit];
     else diff /= unitStep[unit] || 1;
 
-    return isFloat ? diff : parseInt(diff, 10);
+    return isFloat ? diff : Math.trunc(diff);
   }
 
   // 对日期进行+-运算，默认精确到毫秒，可传小数
@@ -183,8 +182,8 @@ class DateIO {
 
     const [, addend, addUnit = unit || 'ms'] = pattern;
     // 年月转化为月，并四舍五入
-    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m + (addend * unitStep[addUnit]).toFixed(0) * 1);
-    return this.init(addend * (unitStep[addUnit] || 0) + this * 1);
+    if (/^[ym]$/.test(addUnit)) return this.set('m', this.m + +(addend * unitStep[addUnit]).toFixed(0));
+    return this.init(addend * (unitStep[addUnit] || 0) + this);
   }
 
   subtract(input, unit) {
@@ -199,7 +198,7 @@ class DateIO {
 
   // 获取某月有多少天
   daysInMonth() {
-    return this.set('m', this.m + 1, 0).d;
+    return this.clone().set('m', this.m + 1, 0).d;
   }
 
   // 比较两个日期是否具有相同的年/月/日/周/时/分/秒，默认精确比较到毫秒
