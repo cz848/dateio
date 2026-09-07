@@ -25,6 +25,7 @@ npm install cz848/dateio#get
 ### 构造器 `dateio(input?: String | Number | Array | Date | DateIO)`
 
 返回`DateIO`对象
+
 - 不带参数时返回当前日期和时间的`DateIO`对象
 - 带参数时返回传入日期时间的`DateIO`对象
 
@@ -39,6 +40,7 @@ dateio('2019-10-20');
 dateio('2019-10-20 15:20:45');
 dateio('2019-10-20T15:20:45Z');
 dateio('2020-01-28 10:04:33.555');
+dateio('2019'); // 纯4位年份，按本地时区解析为 2019-01-01 00:00:00
 ```
 
 #### 传入日期数组
@@ -90,6 +92,7 @@ dateio(dateio('2019-10-20')); // 将DateIO对象传递给构造函数
 ### 年 `.Y()` 或 `.y(input?: Number | Numbers)`
 
 取得/设置日期的年份。
+
 - 不带参数时返回代表的年份
 - 带参数时返回被改变日期后的`DateIO`对象。下同。
 
@@ -225,7 +228,7 @@ dateio().get('y');
 dateio().get('Y');
 ```
 
-### 赋值 `.set(unit: String, value: Number)`
+### 赋值 `.set(unit: String, ...values: Number)`
 
 返回被改变日期后的`DateIO`对象。
 
@@ -251,6 +254,7 @@ dateio('2019-10-20')
 ### 加法 `.add(value: Number, unit?: String)`
 
 对日期进行+-运算，默认精确到毫秒，可传小数。年份会被转换到月份，然后四舍五入到最接近的整数月，月份直接四舍五入到最接近的整数月。
+
 - input: `7d`, `-1m`, `10y`, `5.5h`等或数字。
 - unit: `y`, `m`, `d`, `w`, `h`, `i`, `s`, `ms`。
 
@@ -260,7 +264,7 @@ dateio().add('7d');
 dateio().add('7.5d');
 dateio().add('7.33m');
 dateio().add('7y');
-dateio().add('0.7y') === dateio().add(8, 'm'); // 0.7 * 12 = 8.4 = 8
+dateio('2020-1-1').add('0.7y').valueOf() === dateio('2020-1-1').add(8, 'm').valueOf(); // true, 0.7 * 12 = 8.4 = 8
 ```
 
 注意，为了使操作 dateio().add('-0.5m') 和 dateio().subtract('0.5m') 等价，-0.5、-1.5、-2.5 等都向下舍入。
@@ -310,7 +314,7 @@ dateio('2019-10-20').format('Y-M-D H:I:S'); // '2019-10-20 00:00:00'
 dateio().format('H:i:s a'); // '07:28:30 上午'
 ```
 
-| 格式化字串   | 输出             | 描述               |
+| 格式化字串  | 输出             | 描述               |
 | ---------  | --------------- | -------------------|
 | `Y`　　　　 | '2018'          | 年份，四位，字符串    |
 | `y`　　　　 | 2018            | 年份                |
@@ -354,7 +358,7 @@ dateio('2019-10-20').daysInMonth(); // 31
 
 ### 转换成Date对象 `.toDate()`
 
-转成Date对象之后就可以使用原生Date的各种方法了。
+转成Date对象之后就可以使用原生Date的各种方法了。返回的是日期的**副本**，修改它不会影响原`DateIO`对象。
 
 ```javascript
 dateio('2019-10-20').toDate();
@@ -395,6 +399,18 @@ dateio('2020-2-4 10:04:21').isSame(dateio('2020-2-6 10:04:21'), 'w') // true
 dateio().isLeapYear(); // true or false
 dateio('2019').isLeapYear(); // false
 dateio('2016').isLeapYear(); // true
+```
+
+### 获取或设置当年的第几天 `.dayOfYear(number?: Number)`
+
+不带参数时返回当前日期是当年的第几天（1 ~ 366）；传入数字时将日期设置为当年的第几天；传入非数字时原样返回`DateIO`对象。
+
+```javascript
+dateio('2020-1-1').dayOfYear(); // 1
+dateio('2020-6-15').dayOfYear(); // 167
+dateio('2019-6-15').dayOfYear(); // 166 (非闰年)
+dateio('2020-6-15').dayOfYear(1).format('Y-M-D'); // 2020-01-01
+dateio('2020-1-1').dayOfYear(60).format('M-D'); // 02-29 (闰年)
 ```
 
 ## 国际化
